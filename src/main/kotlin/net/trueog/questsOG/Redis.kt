@@ -14,8 +14,7 @@ class Redis {
             val connection = redisClient.connect()
             connection.close()
             return true
-        }
-        catch (_: RedisConnectionException) {
+        } catch (_: RedisConnectionException) {
             return false
         }
     }
