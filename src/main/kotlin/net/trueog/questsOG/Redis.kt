@@ -8,12 +8,20 @@ class Redis {
     fun getValue(key: String): String? {
         val connection = redisClient.connect()
         val commands = connection.sync()
-        return commands.get(key)
+        val value = commands.get(key)
+        connection.close()
+        return value
     }
 
-    fun setValue(key: String, value: String): String? {
+    fun setValue(key: String, value: String) {
         val connection = redisClient.connect()
         val commands = connection.sync()
-        return commands.set(key, value)
+        commands.set(key, value)
+        connection.close()
+        return
+    }
+
+    fun shutdown() {
+        redisClient.shutdown()
     }
 }
