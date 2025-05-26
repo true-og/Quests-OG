@@ -23,6 +23,7 @@ class ClaimQuest : CommandExecutor {
             sender.sendMessage("You cannot progress any further")
             return true
         }
+
         if (nextQuest.isEligible(sender)) {
             nextQuest.consumeQuestItems(sender)
             nextQuest.reward(sender)

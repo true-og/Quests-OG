@@ -28,7 +28,6 @@ class HomesThree : Quest {
         val walkOneCm = player.getStatistic(Statistic.WALK_ONE_CM)
         val walkOnWaterOneCm = player.getStatistic(Statistic.WALK_ON_WATER_ONE_CM)
         val climbOneCm = player.getStatistic(Statistic.CLIMB_ONE_CM)
-//        val flyOneCm = player.getStatistic(Statistic.FLY_ONE_CM)
         val walkUnderWaterOneCm = player.getStatistic(Statistic.WALK_UNDER_WATER_ONE_CM)
         val minecartOneCm = player.getStatistic(Statistic.MINECART_ONE_CM)
         val boatOneCm = player.getStatistic(Statistic.BOAT_ONE_CM)
