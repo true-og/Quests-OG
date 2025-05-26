@@ -49,7 +49,7 @@ Free
 - 10000k blocks walked on water
 - 10000k blocks walked underwater
 - All 13 music discs
-- Has died to "left the confines of this world while fighting Ender Dragon"
+- Have died to "left the confines of this world while fighting Ender Dragon"
 - All advancements
 - 1500 blocks of obsidian mined
 - 5 dragon eggs
