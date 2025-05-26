@@ -1,9 +1,24 @@
 package net.trueog.questsOG
 
 import io.lettuce.core.RedisClient
+import io.lettuce.core.RedisConnectionException
 
 class Redis {
     private val redisClient: RedisClient = RedisClient.create(QuestsOG.config.redisUrl)
+
+    /**
+     * @return True if successful
+     */
+    fun testConnection(): Boolean {
+        try {
+            val connection = redisClient.connect()
+            connection.close()
+            return true
+        }
+        catch (_: RedisConnectionException) {
+            return false
+        }
+    }
 
     fun getValue(key: String): String? {
         val connection = redisClient.connect()
@@ -18,7 +33,6 @@ class Redis {
         val commands = connection.sync()
         commands.set(key, value)
         connection.close()
-        return
     }
 
     fun shutdown() {

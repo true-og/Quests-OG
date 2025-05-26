@@ -21,15 +21,20 @@ class QuestsOG : JavaPlugin() {
         plugin = this
 
         Companion.config = Config()
-        if (Companion.config.load()) {
+        if (!Companion.config.load()) {
             Bukkit.getPluginManager().disablePlugin(this)
             return
         }
 
         redis = Redis()
+        if (!redis.testConnection()) {
+            logger.severe("Could not connect to Redis")
+            Bukkit.getPluginManager().disablePlugin(this)
+            return
+        }
 
         val diamondBankAPIProvider =
-            server.servicesManager.getRegistration<DiamondBankAPI>(DiamondBankAPI::class.java)
+            server.servicesManager.getRegistration(DiamondBankAPI::class.java)
         if (diamondBankAPIProvider == null) {
             logger.severe("DiamondBank-OG API is null")
             Bukkit.getPluginManager().disablePlugin(this)

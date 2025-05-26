@@ -6,6 +6,9 @@ import java.io.File
 class Config {
     lateinit var redisUrl: String
 
+    /**
+     * @return True if sucessful
+     */
     fun load(): Boolean {
         val file = File(QuestsOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
@@ -18,9 +21,9 @@ class Config {
             redisUrl = config.get("redisUrl") as String
         } catch (_: Exception) {
             QuestsOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
-            return true
+            return false
         }
 
-        return false
+        return true
     }
 }
