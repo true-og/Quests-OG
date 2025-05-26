@@ -9,7 +9,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        if (!event.deathMessage().toString().contains("death.fell.accident.water")) {
+        if (event.deathMessage().toString().contains("death.fell.accident.water")) {
             QuestsOG.redis.setValue("questsog:${event.player.uniqueId}:deaths:fellAccidentWater", "true")
             return
         }

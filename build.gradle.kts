@@ -1,11 +1,22 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     kotlin("jvm") version "2.1.21"
     id("com.gradleup.shadow") version "8.3.5"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
+fun getGitCommitHash(): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine("git", "rev-parse", "--short=10", "HEAD")
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 group = "net.trueog"
-version = "1.0"
+version = getGitCommitHash()
 val apiVersion = "1.19"
 
 repositories {
