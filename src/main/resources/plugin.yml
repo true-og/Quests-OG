@@ -1,0 +1,11 @@
+name: Quests-OG
+version: '${version}'
+main: net.trueog.questsOG.QuestsOG
+api-version: '${apiVersion}'
+depend:
+  - DiamondBank-OG
+  - Utilities-OG
+commands:
+  claimquest:
+    description: Claims a quest, duh
+    usage: /claimquest
