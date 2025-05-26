@@ -2,7 +2,6 @@
 Quests plugin for TrueOG
 
 ## Permissions used
-- essentials.sethome.multiple.homes-1
 - essentials.sethome.multiple.homes-2
 - essentials.sethome.multiple.homes-3
 - essentials.sethome.multiple.homes-4

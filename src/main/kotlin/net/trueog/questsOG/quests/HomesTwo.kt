@@ -62,11 +62,9 @@ class HomesTwo : Quest {
     }
 
     override fun reward(player: Player) {
-        val homesOneNode = PermissionNode.builder("essentials.sethome.multiple.homes-1").build()
         val homesTwoNode = PermissionNode.builder("essentials.sethome.multiple.homes-2").build()
 
         QuestsOG.luckPerms.userManager.modifyUser(player.uniqueId) { user ->
-            user.data().remove(homesOneNode)
             user.data().add(homesTwoNode)
         }
     }
