@@ -1,6 +1,14 @@
 # Quests-OG
 Quests plugin for TrueOG
 
+## Permissions used
+- essentials.sethome.multiple.homes-1
+- essentials.sethome.multiple.homes-2
+- essentials.sethome.multiple.homes-3
+- essentials.sethome.multiple.homes-4
+- essentials.sethome.multiple.homes-5
+- essentials.sethome.multiple.homes-6
+
 ## Requirements for Each Home
 ### One home
 Free
