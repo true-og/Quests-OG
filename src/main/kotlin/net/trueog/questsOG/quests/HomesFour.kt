@@ -4,7 +4,6 @@ import net.luckperms.api.node.types.PermissionNode
 import net.trueog.questsOG.QuestsOG
 import org.bukkit.Bukkit
 import org.bukkit.Statistic
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 
 class HomesFour : Quest {
@@ -15,7 +14,6 @@ class HomesFour : Quest {
         val hasFuriousCocktail: Boolean,
         val hasSeriousDedication: Boolean,
         val levels: Int,
-        val hasBeenKilledByVillager: Boolean,
         val hasDiedToFellAccidentWater: Boolean,
         val duelsWins: Int
     )
@@ -51,8 +49,6 @@ class HomesFour : Quest {
 
         val seriousDedicationAdvancementProgress = player.getAdvancementProgress(seriousDedicationAdvancement)
 
-        val hasBeenKilledByVillager = player.getStatistic(Statistic.ENTITY_KILLED_BY, EntityType.VILLAGER) > 0
-
         val hasDiedToFellAccidentWater =
             QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:fellAccidentWater") == "true"
 
@@ -68,7 +64,6 @@ class HomesFour : Quest {
             furiousCocktailAdvancementProgress.isDone,
             seriousDedicationAdvancementProgress.isDone,
             player.level,
-            hasBeenKilledByVillager,
             hasDiedToFellAccidentWater,
             duelsWins
         )
@@ -83,7 +78,6 @@ class HomesFour : Quest {
                 requirements.hasFuriousCocktail &&
                 requirements.hasSeriousDedication &&
                 requirements.levels >= 150 &&
-                requirements.hasBeenKilledByVillager &&
                 requirements.hasDiedToFellAccidentWater &&
                 requirements.duelsWins >= 50
     }
@@ -115,7 +109,7 @@ class HomesFour : Quest {
 
         return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/17280000 " +
                 "| Total Cm Travelled: ${requirements.totalCm}/20000000 | A Furious Cocktail: ${requirements.hasFuriousCocktail} " +
-                "| Serious Dedication: ${requirements.hasSeriousDedication} | Levels: ${requirements.levels}/150 | Killed by villager: ${requirements.hasBeenKilledByVillager} " +
+                "| Serious Dedication: ${requirements.hasSeriousDedication} | Levels: ${requirements.levels}/150 " +
                 "| Died to death.fell.accident.water: ${requirements.hasDiedToFellAccidentWater} | Duels Wins: ${requirements.duelsWins}/50"
     }
 }
