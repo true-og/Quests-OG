@@ -24,15 +24,6 @@ class HomesSix : Quest {
         val duelsWins: Int
     )
 
-    private val cutestPredatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:husbandry/axolotl_in_a_bucket" }
-    private val twoByTwoAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:husbandry/bred_all_animals" }
-    private val completeCatalogueAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:husbandry/complete_catalogue" }
-    private val monstersHuntedAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:adventure/kill_all_mobs" }
-
     private val neededDiscs = setOf(
         Material.MUSIC_DISC_13,
         Material.MUSIC_DISC_CAT,
