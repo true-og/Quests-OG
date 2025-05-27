@@ -1,13 +1,11 @@
 package net.trueog.questsOG
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import net.kyori.adventure.text.TranslatableComponent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 
 class Events : Listener {
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val translatableDeathMessage = event.deathMessage() as TranslatableComponent
