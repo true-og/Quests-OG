@@ -16,7 +16,7 @@ class HomesSix : Quest {
         val walkUnderWaterOneCm: Int,
         val stoneLikePickedUp: Int,
         val discs: Int,
-        val hasLeftConfinesOfWorldWhileFightingEnderDragon: Boolean,
+//        val hasLeftConfinesOfWorldWhileFightingEnderDragon: Boolean,
         val finishedAdvancements: Int,
         val obsidianMined: Int,
         val dragonEggs: Int,
@@ -67,8 +67,8 @@ class HomesSix : Quest {
             .filterNotNull()
             .filter { it.type in neededDiscs }
 
-        val hasLeftConfinesOfWorldWhileFightingEnderDragon =
-            QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:leftConfinesOfWorldWhileFightingEnderDragon") == "true"
+//        val hasLeftConfinesOfWorldWhileFightingEnderDragon =
+//            QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:leftConfinesOfWorldWhileFightingEnderDragon") == "true"
 
         val finishedAdvancements = Bukkit.getServer().advancementIterator().asSequence().filterNotNull()
             .filter { player.getAdvancementProgress(it).isDone }
@@ -86,7 +86,7 @@ class HomesSix : Quest {
             walkUnderWaterOneCm,
             stoneLikeMined,
             discs.size,
-            hasLeftConfinesOfWorldWhileFightingEnderDragon,
+//            hasLeftConfinesOfWorldWhileFightingEnderDragon,
             finishedAdvancements.count(),
             obsidianMined,
             dragonEggs,
@@ -103,7 +103,7 @@ class HomesSix : Quest {
                 requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
                 requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
                 requirements.discs >= 13 &&
-                requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon &&
+//                requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon &&
                 requirements.finishedAdvancements >= 1179 &&
                 requirements.obsidianMined >= 1500 &&
                 requirements.dragonEggs >= 5 &&
@@ -149,7 +149,8 @@ class HomesSix : Quest {
 
         return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/51840000 " +
                 "| Cm Walked on Water: ${requirements.walkOnWaterOneCm}/1000000 | Cm Walked under Water: ${requirements.walkUnderWaterOneCm}/1000000 " +
-                "| Music Discs: ${requirements.discs}/13 | Left Confines of World While Fighting Ender Dragon: ${requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon}/200 " +
+                "| Music Discs: ${requirements.discs}/13 " +
+//                "| Left Confines of World While Fighting Ender Dragon: ${requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon}/200 " +
                 "| Finished Advancements: ${requirements.finishedAdvancements}/1179 | Obsidian Mined: ${requirements.obsidianMined}/1500 | Dragon Eggs: ${requirements.dragonEggs}/5 " +
                 "| Levels: ${requirements.levels}/250 | Duels Wins: ${requirements.duelsWins}/300"
     }
