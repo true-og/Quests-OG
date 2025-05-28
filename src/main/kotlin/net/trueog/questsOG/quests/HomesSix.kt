@@ -40,9 +40,12 @@ class HomesSix : Quest {
         Material.MUSIC_DISC_5
     )
 
-    private fun getRequirements(player: Player): Requirements {
+    private fun getRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
+        if (playerTotalBalance == null) {
+            return null
+        }
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -86,8 +89,12 @@ class HomesSix : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean {
+    override fun isEligible(player: Player): Boolean? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return requirements.playerTotalBalance >= 5000 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
@@ -105,7 +112,7 @@ class HomesSix : Quest {
     override fun consumeQuestItems(player: Player): Boolean {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 5000)
         val error = withdrawFuture.get()
-        if (error) {
+        if (error == null || error) {
             return true
         }
 
@@ -135,8 +142,12 @@ class HomesSix : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String {
+    override fun unmetRequirements(player: Player): String? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/51840000 " +
                 "| Cm Walked on Water: ${requirements.walkOnWaterOneCm}/1000000 | Cm Walked under Water: ${requirements.walkUnderWaterOneCm}/1000000 " +

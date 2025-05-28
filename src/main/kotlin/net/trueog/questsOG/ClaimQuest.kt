@@ -24,13 +24,28 @@ class ClaimQuest : CommandExecutor {
             return true
         }
 
-        if (nextQuest.isEligible(sender)) {
-            nextQuest.consumeQuestItems(sender)
+        val isEligible = nextQuest.isEligible(sender)
+        if (isEligible == null) {
+            sender.sendMessage("Something wrong while trying to check if you are eligible")
+            return true
+        }
+
+        if (isEligible) {
+            val successful = nextQuest.consumeQuestItems(sender)
+            if (!successful) {
+                sender.sendMessage("Something wrong while trying to consume the quest items")
+                return true
+            }
             nextQuest.reward(sender)
             sender.sendMessage("Claimed quest!")
         } else {
             sender.sendMessage("You are not eligible to claim the quest")
-            sender.sendMessage(nextQuest.unmetRequirements(sender))
+            val unmetRequirements = nextQuest.unmetRequirements(sender)
+            if (unmetRequirements == null) {
+                sender.sendMessage("Something wrong while trying to get the unmet requirements")
+                return true
+            }
+            sender.sendMessage(unmetRequirements)
         }
         return true
     }

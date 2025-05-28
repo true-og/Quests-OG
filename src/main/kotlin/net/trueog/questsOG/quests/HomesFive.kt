@@ -35,9 +35,12 @@ class HomesFive : Quest {
     private val monstersHuntedAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { advancement -> advancement.key.toString() == "minecraft:adventure/kill_all_mobs" }
 
-    private fun getRequirements(player: Player): Requirements {
+    private fun getRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
+        if (playerTotalBalance == null) {
+            return null
+        }
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -85,8 +88,12 @@ class HomesFive : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean {
+    override fun isEligible(player: Player): Boolean? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return requirements.playerTotalBalance >= 2500 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
@@ -108,7 +115,7 @@ class HomesFive : Quest {
     override fun consumeQuestItems(player: Player): Boolean {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 2500)
         val error = withdrawFuture.get()
-        if (error) {
+        if (error == null || error) {
             return true
         }
 
@@ -127,8 +134,12 @@ class HomesFive : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String {
+    override fun unmetRequirements(player: Player): String? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/25920000 " +
                 "| Cm Travelled on Pig: ${requirements.pigOneCm}/500000 | Cm Travelled on Strider: ${requirements.striderOneCm}/ 100000" +

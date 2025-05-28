@@ -14,9 +14,12 @@ class HomesTwo : Quest {
         val duelsWins: Int
     )
 
-    private fun getRequirements(player: Player): Requirements {
+    private fun getRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
+        if (playerTotalBalance == null) {
+            return null
+        }
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -41,8 +44,12 @@ class HomesTwo : Quest {
         return Requirements(playerTotalBalance, ticksPlayed, totalCm, player.level, duelsWins)
     }
 
-    override fun isEligible(player: Player): Boolean {
+    override fun isEligible(player: Player): Boolean? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return requirements.playerTotalBalance >= 100 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
@@ -54,10 +61,13 @@ class HomesTwo : Quest {
     override fun consumeQuestItems(player: Player): Boolean {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 100)
         val error = withdrawFuture.get()
+        if (error == null || error) {
+            return true
+        }
 
         player.level -= 100
 
-        return error
+        return false
     }
 
     override fun reward(player: Player) {
@@ -68,8 +78,12 @@ class HomesTwo : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String {
+    override fun unmetRequirements(player: Player): String? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return "Total Balance: ${requirements.playerTotalBalance}/100 | Ticks Played: ${requirements.ticksPlayed}/1728000 | Total Cm Travelled: ${requirements.totalCm}/1000000"
     }

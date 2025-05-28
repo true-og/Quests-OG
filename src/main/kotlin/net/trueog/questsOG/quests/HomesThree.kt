@@ -19,9 +19,12 @@ class HomesThree : Quest {
     private val beaconatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:nether/create_full_beacon" }
 
-    private fun getRequirements(player: Player): Requirements {
+    private fun getRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
+        if (playerTotalBalance == null) {
+            return null
+        }
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -55,8 +58,12 @@ class HomesThree : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean {
+    override fun isEligible(player: Player): Boolean? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return requirements.playerTotalBalance >= 250 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
@@ -69,7 +76,7 @@ class HomesThree : Quest {
     override fun consumeQuestItems(player: Player): Boolean {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 250)
         val error = withdrawFuture.get()
-        if (error) {
+        if (error == null || error) {
             return true
         }
 
@@ -88,9 +95,14 @@ class HomesThree : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String {
+    override fun unmetRequirements(player: Player): String? {
         val requirements = getRequirements(player)
 
-        return "Total Balance: ${requirements.playerTotalBalance}/250 | Ticks Played: ${requirements.ticksPlayed}/8640000 | Total Cm Travelled: ${requirements.totalCm}/5000000 | Beaconator: ${requirements.hasBeaconator} | Levels: ${requirements.levels}/100"
+        if (requirements == null) {
+            return null
+        }
+
+        return "Total Balance: ${requirements.playerTotalBalance}/250 | Ticks Played: ${requirements.ticksPlayed}/8640000 " +
+                "| Total Cm Travelled: ${requirements.totalCm}/5000000 | Beaconator: ${requirements.hasBeaconator} | Levels: ${requirements.levels}/100"
     }
 }

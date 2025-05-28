@@ -23,9 +23,12 @@ class HomesFour : Quest {
     private val seriousDedicationAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:husbandry/obtain_netherite_hoe" }
 
-    private fun getRequirements(player: Player): Requirements {
+    private fun getRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
+        if (playerTotalBalance == null) {
+            return null
+        }
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -69,8 +72,12 @@ class HomesFour : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean {
+    override fun isEligible(player: Player): Boolean? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return requirements.playerTotalBalance >= 1000 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
@@ -85,7 +92,7 @@ class HomesFour : Quest {
     override fun consumeQuestItems(player: Player): Boolean {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 1000)
         val error = withdrawFuture.get()
-        if (error) {
+        if (error == null || error) {
             return true
         }
 
@@ -104,8 +111,12 @@ class HomesFour : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String {
+    override fun unmetRequirements(player: Player): String? {
         val requirements = getRequirements(player)
+
+        if (requirements == null) {
+            return null
+        }
 
         return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/17280000 " +
                 "| Total Cm Travelled: ${requirements.totalCm}/20000000 | A Furious Cocktail: ${requirements.hasFuriousCocktail} " +

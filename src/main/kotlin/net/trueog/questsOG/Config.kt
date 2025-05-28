@@ -7,7 +7,7 @@ class Config {
     lateinit var redisUrl: String
 
     /**
-     * @return True if sucessful
+     * @return True if successful
      */
     fun load(): Boolean {
         val file = File(QuestsOG.plugin.dataFolder, "config.yml")
