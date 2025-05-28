@@ -18,7 +18,7 @@ fun getGitCommitHash(): String {
 val apiVersion = "1.19"
 
 group = "net.trueog"
-version = "$apiVersion-${getGitCommitHash()}
+version = "$apiVersion-${getGitCommitHash()}"
 
 repositories {
     mavenCentral()
