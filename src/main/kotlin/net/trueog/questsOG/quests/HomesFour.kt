@@ -1,7 +1,10 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
+import net.trueog.questsOG.Requirement
 import org.bukkit.Bukkit
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
@@ -23,7 +26,7 @@ class HomesFour : Quest {
     private val seriousDedicationAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:husbandry/obtain_netherite_hoe" }
 
-    private fun getRequirements(player: Player): Requirements? {
+    private fun fetchRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
         if (playerTotalBalance == null) {
@@ -73,7 +76,7 @@ class HomesFour : Quest {
     }
 
     override fun isEligible(player: Player): Boolean? {
-        val requirements = getRequirements(player)
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
@@ -111,16 +114,22 @@ class HomesFour : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String? {
-        val requirements = getRequirements(player)
+    override fun getRequirements(player: Player): Array<Requirement>? {
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/17280000 " +
-                "| Total Cm Travelled: ${requirements.totalCm}/20000000 | A Furious Cocktail: ${requirements.hasFuriousCocktail} " +
-                "| Serious Dedication: ${requirements.hasSeriousDedication} | Levels: ${requirements.levels}/150 " +
-                "| Died to death.fell.accident.water: ${requirements.hasDiedToFellAccidentWater} | Duels Wins: ${requirements.duelsWins}/50"
+        return arrayOf(
+            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 1000),
+            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 17280000),
+            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 20000000),
+            BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),
+            BooleanRequirement("Serious Dedication", requirements.hasSeriousDedication),
+            ProgressRequirement("Levels", requirements.levels, 150),
+            BooleanRequirement("Died to \"death.fell.accident.water\"", requirements.hasDiedToFellAccidentWater),
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 50)
+        )
     }
 }

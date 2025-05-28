@@ -1,7 +1,10 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
+import net.trueog.questsOG.Requirement
 import org.bukkit.Bukkit
 import org.bukkit.Statistic
 import org.bukkit.entity.EntityType
@@ -35,7 +38,7 @@ class HomesFive : Quest {
     private val monstersHuntedAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { advancement -> advancement.key.toString() == "minecraft:adventure/kill_all_mobs" }
 
-    private fun getRequirements(player: Player): Requirements? {
+    private fun fetchRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
         if (playerTotalBalance == null) {
@@ -89,7 +92,7 @@ class HomesFive : Quest {
     }
 
     override fun isEligible(player: Player): Boolean? {
-        val requirements = getRequirements(player)
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
@@ -134,18 +137,29 @@ class HomesFive : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String? {
-        val requirements = getRequirements(player)
+    override fun getRequirements(player: Player): Array<Requirement>? {
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/25920000 " +
-                "| Cm Travelled on Pig: ${requirements.pigOneCm}/500000 | Cm Travelled on Strider: ${requirements.striderOneCm}/ 100000" +
-                "| Dolphins killed: ${requirements.dolphinKills}/50 | Zoglins killed: ${requirements.zoglinKills}/50 | The Cutest Predator: ${requirements.hasCutestPredator} " +
-                "| Two by Two: ${requirements.hasTwoByTwo} | Complete Catalogue: ${requirements.hasCompleteCatalogue} | Monsters Hunted: ${requirements.hasMonstersHunted} " +
-                "| Died to Fell While Climbing ${requirements.hasDiedToFellWhileClimbing} | Died to Magna Block While Fighting Zoglin: ${requirements.hasDiedToMagmaBlockWhileFightingZoglin} " +
-                "| Levels: ${requirements.levels}/200 | Fish Caught: ${requirements.fishCaught}/2000 | Duels Wins: ${requirements.duelsWins}"
+        return arrayOf(
+            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 2500),
+            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 25920000),
+            ProgressRequirement("Cm Travelled on Pig", requirements.pigOneCm, 500000),
+            ProgressRequirement("Cm Travelled on Strider", requirements.striderOneCm, 100000),
+            ProgressRequirement("Dolphins Killed", requirements.dolphinKills, 50),
+            ProgressRequirement("Zoglins Killed", requirements.zoglinKills, 50),
+            BooleanRequirement("The Cutest Predator", requirements.hasCutestPredator),
+            BooleanRequirement("Two by Two", requirements.hasTwoByTwo),
+            BooleanRequirement("A Complete Catalogue", requirements.hasCompleteCatalogue),
+            BooleanRequirement("Monsters Hunted", requirements.hasMonstersHunted),
+            BooleanRequirement("Died to \"fell while climbing\"", requirements.hasDiedToFellWhileClimbing),
+            BooleanRequirement("Died to \"walked into the danger zone due to Zoglin\"", requirements.hasDiedToMagmaBlockWhileFightingZoglin),
+            ProgressRequirement("Levels", requirements.levels, 200),
+            ProgressRequirement("Fish Caught", requirements.fishCaught, 2000),
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 150)
+        )
     }
 }

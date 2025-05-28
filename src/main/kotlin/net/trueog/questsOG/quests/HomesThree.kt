@@ -1,7 +1,10 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
+import net.trueog.questsOG.Requirement
 import org.bukkit.Bukkit
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
@@ -19,7 +22,7 @@ class HomesThree : Quest {
     private val beaconatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:nether/create_full_beacon" }
 
-    private fun getRequirements(player: Player): Requirements? {
+    private fun fetchRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
         if (playerTotalBalance == null) {
@@ -59,7 +62,7 @@ class HomesThree : Quest {
     }
 
     override fun isEligible(player: Player): Boolean? {
-        val requirements = getRequirements(player)
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
@@ -95,14 +98,20 @@ class HomesThree : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String? {
-        val requirements = getRequirements(player)
+    override fun getRequirements(player: Player): Array<Requirement>? {
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return "Total Balance: ${requirements.playerTotalBalance}/250 | Ticks Played: ${requirements.ticksPlayed}/8640000 " +
-                "| Total Cm Travelled: ${requirements.totalCm}/5000000 | Beaconator: ${requirements.hasBeaconator} | Levels: ${requirements.levels}/100"
+        return arrayOf(
+            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 250),
+            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 8640000),
+            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 5000000),
+            BooleanRequirement("Beaconator", requirements.hasBeaconator),
+            ProgressRequirement("Levels", requirements.levels, 100),
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 20)
+        )
     }
 }

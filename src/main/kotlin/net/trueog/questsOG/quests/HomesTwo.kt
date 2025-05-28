@@ -1,7 +1,9 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
+import net.trueog.questsOG.Requirement
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
 
@@ -14,7 +16,7 @@ class HomesTwo : Quest {
         val duelsWins: Int
     )
 
-    private fun getRequirements(player: Player): Requirements? {
+    private fun fetchRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
         if (playerTotalBalance == null) {
@@ -45,7 +47,7 @@ class HomesTwo : Quest {
     }
 
     override fun isEligible(player: Player): Boolean? {
-        val requirements = getRequirements(player)
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
@@ -78,13 +80,17 @@ class HomesTwo : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String? {
-        val requirements = getRequirements(player)
+    override fun getRequirements(player: Player): Array<Requirement>? {
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return "Total Balance: ${requirements.playerTotalBalance}/100 | Ticks Played: ${requirements.ticksPlayed}/1728000 | Total Cm Travelled: ${requirements.totalCm}/1000000"
+        return arrayOf(
+            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 100),
+            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 1728000),
+            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000)
+        )
     }
 }

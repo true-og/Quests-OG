@@ -1,7 +1,9 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
+import net.trueog.questsOG.Requirement
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Statistic
@@ -40,7 +42,7 @@ class HomesSix : Quest {
         Material.MUSIC_DISC_5
     )
 
-    private fun getRequirements(player: Player): Requirements? {
+    private fun fetchRequirements(player: Player): Requirements? {
         val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
         val playerTotalBalance = playerTotalBalanceFuture.get()
         if (playerTotalBalance == null) {
@@ -90,7 +92,7 @@ class HomesSix : Quest {
     }
 
     override fun isEligible(player: Player): Boolean? {
-        val requirements = getRequirements(player)
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
@@ -142,18 +144,24 @@ class HomesSix : Quest {
         }
     }
 
-    override fun unmetRequirements(player: Player): String? {
-        val requirements = getRequirements(player)
+    override fun getRequirements(player: Player): Array<Requirement>? {
+        val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return "Total Balance: ${requirements.playerTotalBalance}/1000 | Ticks Played: ${requirements.ticksPlayed}/51840000 " +
-                "| Cm Walked on Water: ${requirements.walkOnWaterOneCm}/1000000 | Cm Walked under Water: ${requirements.walkUnderWaterOneCm}/1000000 " +
-                "| Music Discs: ${requirements.discs}/13 " +
-//                "| Left Confines of World While Fighting Ender Dragon: ${requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon}/200 " +
-                "| Finished Advancements: ${requirements.finishedAdvancements}/1179 | Obsidian Mined: ${requirements.obsidianMined}/1500 | Dragon Eggs: ${requirements.dragonEggs}/5 " +
-                "| Levels: ${requirements.levels}/250 | Duels Wins: ${requirements.duelsWins}/300"
+        return arrayOf(
+            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 5000),
+            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 51840000),
+            ProgressRequirement("Cm Walked on Water", requirements.walkOnWaterOneCm, 1000000),
+            ProgressRequirement("Cm Walked under Water", requirements.walkUnderWaterOneCm, 1000000),
+            ProgressRequirement("Music Dics", requirements.discs, 13),
+            ProgressRequirement("Finished Advancements", requirements.finishedAdvancements, 1179),
+            ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
+            ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),
+            ProgressRequirement("Levels", requirements.levels, 250),
+            ProgressRequirement("Duels Wins", requirements.levels, 300)
+        )
     }
 }

@@ -1,5 +1,6 @@
 package net.trueog.questsOG.quests
 
+import net.trueog.questsOG.Requirement
 import org.bukkit.entity.Player
 
 interface Quest {
@@ -12,5 +13,5 @@ interface Quest {
 
     fun reward(player: Player)
 
-    fun unmetRequirements(player: Player): String?
+    fun getRequirements(player: Player): Array<Requirement>?
 }

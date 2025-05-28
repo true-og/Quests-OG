@@ -40,12 +40,21 @@ class ClaimQuest : CommandExecutor {
             sender.sendMessage("Claimed quest!")
         } else {
             sender.sendMessage("You are not eligible to claim the quest")
-            val unmetRequirements = nextQuest.unmetRequirements(sender)
-            if (unmetRequirements == null) {
+            val requirements = nextQuest.getRequirements(sender)
+            if (requirements == null) {
                 sender.sendMessage("Something wrong while trying to get the unmet requirements")
                 return true
             }
-            sender.sendMessage(unmetRequirements)
+            var requirementsMessage = ""
+            for (requirement in requirements) {
+                if (requirement is BooleanRequirement) {
+                    requirementsMessage += "${requirement.name}: ${requirement.met} | "
+                }
+                if (requirement is ProgressRequirement) {
+                    requirementsMessage += "${requirement.name}: ${requirement.current}/${requirement.target} | "
+                }
+            }
+            sender.sendMessage(requirementsMessage)
         }
         return true
     }
