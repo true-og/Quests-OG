@@ -129,9 +129,9 @@ class HomesSix : Quest {
             }
         }
 
-        player.inventory.removeItem(ItemStack(Material.DRAGON_EGG, 5))
+        val notRemoved = player.inventory.removeItem(ItemStack(Material.DRAGON_EGG, 5))
 
-        return true
+        return notRemoved.isEmpty()
     }
 
     override fun reward(player: Player) {
