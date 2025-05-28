@@ -115,7 +115,7 @@ class HomesSix : Quest {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 5000)
         val error = withdrawFuture.get()
         if (error == null || error) {
-            return true
+            return false
         }
 
         player.level -= 250
@@ -131,7 +131,7 @@ class HomesSix : Quest {
 
         player.inventory.removeItem(ItemStack(Material.DRAGON_EGG, 5))
 
-        return false
+        return true
     }
 
     override fun reward(player: Player) {

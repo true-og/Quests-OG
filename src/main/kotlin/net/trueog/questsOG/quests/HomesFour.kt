@@ -96,12 +96,12 @@ class HomesFour : Quest {
         val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 1000)
         val error = withdrawFuture.get()
         if (error == null || error) {
-            return true
+            return false
         }
 
         player.level -= 150
 
-        return false
+        return true
     }
 
     override fun reward(player: Player) {
