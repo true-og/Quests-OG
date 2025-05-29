@@ -6,9 +6,11 @@ import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
 import org.bukkit.Statistic
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 
 class HomesFive : Quest {
     private data class Requirements(
@@ -26,8 +28,11 @@ class HomesFive : Quest {
         val hasDiedToMagmaBlockWhileFightingZoglin: Boolean,
         val levels: Int,
         val fishCaught: Int,
+        val hasVillagerHead: Boolean,
         val duelsWins: Int
     )
+
+    val customMobHeadKey = NamespacedKey(QuestsOG.mobHeads, "customMobHead")
 
     private val cutestPredatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { advancement -> advancement.key.toString() == "minecraft:husbandry/axolotl_in_a_bucket" }
@@ -70,6 +75,11 @@ class HomesFive : Quest {
 
         val fishCaught = player.getStatistic(Statistic.FISH_CAUGHT)
 
+        val hasVillagerHead = player.inventory.filterNotNull().any {
+            val data = it.itemMeta.persistentDataContainer.get(customMobHeadKey,PersistentDataType.STRING)
+            data?.startsWith("VILLAGER") == true
+        }
+
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
         return Requirements(
@@ -87,6 +97,7 @@ class HomesFive : Quest {
             hasDiedToMagmaBlockWhileFightingZoglin,
             player.level,
             fishCaught,
+            hasVillagerHead,
             duelsWins
         )
     }
@@ -112,6 +123,7 @@ class HomesFive : Quest {
                 requirements.hasDiedToMagmaBlockWhileFightingZoglin &&
                 requirements.levels >= 200 &&
                 requirements.fishCaught >= 2000 &&
+                requirements.hasVillagerHead &&
                 requirements.duelsWins >= 150
     }
 
@@ -159,6 +171,7 @@ class HomesFive : Quest {
             BooleanRequirement("Died to \"walked into the danger zone due to Zoglin\"", requirements.hasDiedToMagmaBlockWhileFightingZoglin),
             ProgressRequirement("Levels", requirements.levels, 200),
             ProgressRequirement("Fish Caught", requirements.fishCaught, 2000),
+            BooleanRequirement("Has Villager Head", requirements.hasVillagerHead),
             ProgressRequirement("Duels Wins", requirements.duelsWins, 150)
         )
     }

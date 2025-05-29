@@ -4,6 +4,7 @@ import me.realized.duels.api.Duels
 import net.luckperms.api.LuckPerms
 import net.trueog.diamondbankog.DiamondBankAPI
 import org.bukkit.Bukkit
+import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
 
@@ -15,6 +16,7 @@ class QuestsOG : JavaPlugin() {
         lateinit var diamondBankAPI: DiamondBankAPI
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
+        lateinit var mobHeads: Plugin
     }
 
     override fun onEnable() {
@@ -57,6 +59,14 @@ class QuestsOG : JavaPlugin() {
             return
         }
         Companion.duels = duels as Duels
+
+        val mobHeads = Bukkit.getServer().pluginManager.getPlugin("MobHeads-OG")
+        if (mobHeads == null) {
+            this.logger.severe("The MobHeads-OG plugin is not loaded, quitting....")
+            Bukkit.getPluginManager().disablePlugin(this)
+            return
+        }
+        Companion.mobHeads = mobHeads
 
         this.server.pluginManager.registerEvents(Events(), this)
         getCommand("claimquest")?.setExecutor(ClaimQuest())

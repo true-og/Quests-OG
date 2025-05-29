@@ -60,9 +60,6 @@ class HomesFour : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        // TODO: Check if player has a villager head
-//        val hasVillagerHead = player.inventory.any { isVillagerHead(it) }
-
         return Requirements(
             playerTotalBalance,
             ticksPlayed,
