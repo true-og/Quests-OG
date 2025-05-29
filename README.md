@@ -49,6 +49,7 @@ Free
 - Have died to magma block while fighting zoglin
 - 200 levels
 - 2000 fish caught
+- Villager head
 - 150 Duels wins
 ### Six Homes
 - 5000 diamonds
