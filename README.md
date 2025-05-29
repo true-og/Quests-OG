@@ -31,7 +31,6 @@ Free
 - A Furious Cocktail advancement
 - Serious Dedication advancement
 - 150 levels
-- Have been killed by a villager
 - Have died to death.fell.accident.water
 - 50 Duels wins
 ### Five homes
@@ -57,7 +56,6 @@ Free
 - 10000k blocks walked on water
 - 10000k blocks walked underwater
 - All 13 music discs
-- Have died to "left the confines of this world while fighting Ender Dragon"
 - All advancements
 - 1500 blocks of obsidian mined
 - 5 dragon eggs
