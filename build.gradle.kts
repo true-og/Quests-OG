@@ -1,24 +1,26 @@
-import java.io.ByteArrayOutputStream
+import java.io.BufferedReader
 
 plugins {
     kotlin("jvm") version "2.1.21"
     id("com.gradleup.shadow") version "8.3.5"
-    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
-fun getGitCommitHash(): String {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "rev-parse", "--short=10", "HEAD")
-        standardOutput = stdout
+val commitHash = Runtime
+    .getRuntime()
+    .exec(arrayOf("git", "rev-parse", "--short=10", "HEAD"))
+    .let { process ->
+        process.waitFor()
+        val output = process.inputStream.use {
+            it.bufferedReader().use(BufferedReader::readText)
+        }
+        process.destroy()
+        output.trim()
     }
-    return stdout.toString().trim()
-}
 
 val apiVersion = "1.19"
 
 group = "net.trueog"
-version = "$apiVersion-${getGitCommitHash()}"
+version = "$apiVersion-$commitHash"
 
 repositories {
     mavenCentral()
@@ -28,8 +30,8 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") {
         name = "sonatype"
     }
-    maven {
-        url = uri("https://jitpack.io")
+    maven("https://jitpack.io") {
+        name = "jitpack"
     }
 }
 
@@ -45,15 +47,6 @@ dependencies {
 
     compileOnly(project(":libs:Utilities-OG"))
     compileOnly(project(":libs:DiamondBank-OG"))
-}
-
-tasks {
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.19")
-    }
 }
 
 val targetJavaVersion = 17
@@ -83,5 +76,21 @@ tasks.processResources {
     filteringCharset = "UTF-8"
     filesMatching("plugin.yml") {
         expand(props)
+    }
+
+    from("LICENSE") {
+        into("/")
+    }
+}
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        vendor = JvmVendorSpec.GRAAL_VM
     }
 }
