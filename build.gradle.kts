@@ -85,3 +85,8 @@ tasks.processResources {
         expand(props)
     }
 }
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
