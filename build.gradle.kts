@@ -90,3 +90,10 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isPreserveFileTimestamps = false
     isReproducibleFileOrder = true
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.GRAAL_VM
+    }
+}

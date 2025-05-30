@@ -1,6 +1,10 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "Quests-OG"
 
-val process = ProcessBuilder("sh", "bootstrap.sh")
+val process: Process = ProcessBuilder("sh", "bootstrap.sh")
     .directory(rootDir)
     .start()
 
