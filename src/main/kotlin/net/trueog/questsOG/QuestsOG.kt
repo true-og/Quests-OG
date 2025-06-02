@@ -1,6 +1,9 @@
 package net.trueog.questsOG
 
 import me.realized.duels.api.Duels
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.luckperms.api.LuckPerms
 import net.trueog.diamondbankog.DiamondBankAPI
 import org.bukkit.Bukkit
@@ -17,6 +20,14 @@ class QuestsOG : JavaPlugin() {
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
         lateinit var mobHeads: Plugin
+        var mm = MiniMessage.builder()
+            .tags(
+                TagResolver.builder()
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.reset())
+                    .build()
+            )
+            .build()
     }
 
     override fun onEnable() {
