@@ -61,7 +61,7 @@ class HomesSix : Quest {
 
         val discs = player.inventory
             .filterNotNull()
-            .filter { it.type in neededDiscs }
+            .filter { it.type in neededDiscs }.distinctBy { it.type }
 
 //        val hasLeftConfinesOfWorldWhileFightingEnderDragon =
 //            QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:leftConfinesOfWorldWhileFightingEnderDragon") == "true"
@@ -156,7 +156,7 @@ class HomesSix : Quest {
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 51840000),
             ProgressRequirement("Cm Walked on Water", requirements.walkOnWaterOneCm, 1000000),
             ProgressRequirement("Cm Walked under Water", requirements.walkUnderWaterOneCm, 1000000),
-            ProgressRequirement("Music Dics", requirements.discs, 13),
+            ProgressRequirement("Music Discs", requirements.discs, 13),
             ProgressRequirement("Finished Advancements", requirements.finishedAdvancements, 1179),
             ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
             ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),

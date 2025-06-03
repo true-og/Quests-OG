@@ -76,7 +76,7 @@ class HomesFive : Quest {
         val fishCaught = player.getStatistic(Statistic.FISH_CAUGHT)
 
         val hasVillagerHead = player.inventory.filterNotNull().any {
-            val data = it.itemMeta.persistentDataContainer.get(customMobHeadKey,PersistentDataType.STRING)
+            val data = it.itemMeta.persistentDataContainer.get(customMobHeadKey, PersistentDataType.STRING)
             data?.startsWith("VILLAGER") == true
         }
 
@@ -168,7 +168,10 @@ class HomesFive : Quest {
             BooleanRequirement("A Complete Catalogue", requirements.hasCompleteCatalogue),
             BooleanRequirement("Monsters Hunted", requirements.hasMonstersHunted),
             BooleanRequirement("Died to \"fell while climbing\"", requirements.hasDiedToFellWhileClimbing),
-            BooleanRequirement("Died to \"walked into the danger zone due to Zoglin\"", requirements.hasDiedToMagmaBlockWhileFightingZoglin),
+            BooleanRequirement(
+                "Died to \"walked into the danger zone due to Zoglin\"",
+                requirements.hasDiedToMagmaBlockWhileFightingZoglin
+            ),
             ProgressRequirement("Levels", requirements.levels, 200),
             ProgressRequirement("Fish Caught", requirements.fishCaught, 2000),
             BooleanRequirement("Has Villager Head", requirements.hasVillagerHead),

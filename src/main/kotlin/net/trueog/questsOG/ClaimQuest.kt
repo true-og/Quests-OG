@@ -48,13 +48,13 @@ class ClaimQuest : CommandExecutor {
             var requirementsMessage = ""
             for (requirement in requirements) {
                 if (requirement is BooleanRequirement) {
-                    requirementsMessage += "${requirement.name}: ${requirement.met} | "
+                    requirementsMessage += "${if (requirement.met) "<green>" else "<red>"}${requirement.name}: ${requirement.met}<reset> |"
                 }
                 if (requirement is ProgressRequirement) {
-                    requirementsMessage += "${requirement.name}: ${requirement.current}/${requirement.target} | "
+                    requirementsMessage += "${if (requirement.current >= requirement.target) "<green>" else "<red>"}${requirement.name}: ${requirement.current}/${requirement.target}<reset> | "
                 }
             }
-            sender.sendMessage(requirementsMessage)
+            sender.sendMessage(QuestsOG.mm.deserialize(requirementsMessage))
         }
         return true
     }
