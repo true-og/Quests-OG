@@ -161,7 +161,7 @@ class HomesSix : Quest {
             ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
             ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),
             ProgressRequirement("Levels", requirements.levels, 250),
-            ProgressRequirement("Duels Wins", requirements.levels, 300)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 300)
         )
     }
 }
