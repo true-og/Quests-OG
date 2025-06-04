@@ -71,7 +71,7 @@ class HomesSix : Quest {
 
         val obsidianMined = player.getStatistic(Statistic.MINE_BLOCK, Material.OBSIDIAN)
 
-        val dragonEggs = player.inventory.filterNotNull().count { it.type == Material.DRAGON_EGG }
+        val dragonEggs = player.inventory.all(Material.DRAGON_EGG).values.sumOf { it.amount }
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
