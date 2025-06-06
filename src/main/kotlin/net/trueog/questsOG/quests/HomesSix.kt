@@ -71,7 +71,7 @@ class HomesSix : Quest {
 
         val obsidianMined = player.getStatistic(Statistic.MINE_BLOCK, Material.OBSIDIAN)
 
-        val dragonEggs = player.inventory.filterNotNull().count { it.type == Material.DRAGON_EGG }
+        val dragonEggs = player.inventory.all(Material.DRAGON_EGG).values.sumOf { it.amount }
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
@@ -161,7 +161,7 @@ class HomesSix : Quest {
             ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
             ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),
             ProgressRequirement("Levels", requirements.levels, 250),
-            ProgressRequirement("Duels Wins", requirements.levels, 300)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 300)
         )
     }
 }
