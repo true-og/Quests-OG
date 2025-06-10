@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly("net.luckperms:api:5.4")
+    compileOnly("net.luckperms:api:5.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
