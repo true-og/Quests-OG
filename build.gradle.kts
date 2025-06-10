@@ -41,7 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    implementation("io.lettuce:lettuce-core:6.7.0.RELEASE")
+    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
 
     compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1")
 
