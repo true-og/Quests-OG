@@ -48,6 +48,10 @@ dependencies {
     compileOnly(project(":libs:DiamondBank-OG"))
 }
 
+configurations.all {
+    exclude(group = "io.projectreactor")
+}
+
 val targetJavaVersion = 17
 kotlin {
     jvmToolchain(targetJavaVersion)
