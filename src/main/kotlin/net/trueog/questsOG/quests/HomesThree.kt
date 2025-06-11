@@ -1,7 +1,9 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.diamondbankog.PostgreSQL
 import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
@@ -11,7 +13,7 @@ import org.bukkit.entity.Player
 
 class HomesThree : Quest {
     private data class Requirements(
-        val playerTotalBalance: Int,
+        val totalShards: Int,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasBeaconator: Boolean,
@@ -22,12 +24,16 @@ class HomesThree : Quest {
     private val beaconatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:nether/create_full_beacon" }
 
-    private fun fetchRequirements(player: Player): Requirements? {
-        val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
-        val playerTotalBalance = playerTotalBalanceFuture.get()
-        if (playerTotalBalance == null) {
+    private suspend fun fetchRequirements(player: Player): Requirements? {
+        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
+        val playerShards = playerShardsResult.getOrElse {
             return null
         }
+        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
+            return null
+        }
+        val totalShards =
+            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -52,7 +58,7 @@ class HomesThree : Quest {
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
         return Requirements(
-            playerTotalBalance,
+            totalShards,
             ticksPlayed,
             totalCm,
             advancementProgress.isDone,
@@ -61,14 +67,14 @@ class HomesThree : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean? {
+    override suspend fun isEligible(player: Player): Boolean? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return requirements.playerTotalBalance >= 250 &&
+        return requirements.totalShards >= 250 * 9 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
                 requirements.totalCm / 100.0 >= 50000 && // 100k?
                 requirements.hasBeaconator &&
@@ -76,14 +82,16 @@ class HomesThree : Quest {
                 requirements.duelsWins >= 20
     }
 
-    override fun consumeQuestItems(player: Player): Boolean {
-        val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 250)
-        val error = withdrawFuture.get()
-        if (error == null || error) {
+    override suspend fun consumeQuestItems(player: Player): Boolean {
+        val withdrawResult =
+            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 250 * 9, "Homes three quest claimed", null)
+        if (withdrawResult.isFailure) {
             return false
         }
 
-        player.level -= 100
+        runOnMainThread {
+            player.level -= 100
+        }
 
         return true
     }
@@ -98,7 +106,7 @@ class HomesThree : Quest {
         }
     }
 
-    override fun getRequirements(player: Player): Array<Requirement>? {
+    override suspend fun getRequirements(player: Player): Array<Requirement>? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
@@ -106,7 +114,7 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 250),
+            ProgressRequirement("Total Balance", requirements.totalShards, 250 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 8640000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 5000000),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),

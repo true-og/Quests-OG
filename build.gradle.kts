@@ -37,9 +37,8 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly("net.luckperms:api:5.4")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    compileOnly("net.luckperms:api:5.5")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
 
@@ -47,6 +46,11 @@ dependencies {
 
     compileOnly(project(":libs:Utilities-OG"))
     compileOnly(project(":libs:DiamondBank-OG"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+}
+
+configurations.all {
+    exclude(group = "io.projectreactor")
 }
 
 val targetJavaVersion = 17

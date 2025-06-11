@@ -1,6 +1,8 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.diamondbankog.PostgreSQL
+import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
@@ -9,19 +11,23 @@ import org.bukkit.entity.Player
 
 class HomesTwo : Quest {
     private data class Requirements(
-        val playerTotalBalance: Int,
+        val totalShards: Int,
         val ticksPlayed: Int,
         val totalCm: Int,
         val levels: Int,
         val duelsWins: Int
     )
 
-    private fun fetchRequirements(player: Player): Requirements? {
-        val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
-        val playerTotalBalance = playerTotalBalanceFuture.get()
-        if (playerTotalBalance == null) {
+    private suspend fun fetchRequirements(player: Player): Requirements? {
+        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
+        val playerShards = playerShardsResult.getOrElse {
             return null
         }
+        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
+            return null
+        }
+        val totalShards =
+            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -43,31 +49,33 @@ class HomesTwo : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(playerTotalBalance, ticksPlayed, totalCm, player.level, duelsWins)
+        return Requirements(totalShards, ticksPlayed, totalCm, player.level, duelsWins)
     }
 
-    override fun isEligible(player: Player): Boolean? {
+    override suspend fun isEligible(player: Player): Boolean? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return requirements.playerTotalBalance >= 100 &&
+        return requirements.totalShards >= 100 * 9 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
                 requirements.totalCm / 100.0 >= 10000 &&
                 requirements.levels >= 50 &&
                 requirements.duelsWins >= 10
     }
 
-    override fun consumeQuestItems(player: Player): Boolean {
-        val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 100)
-        val error = withdrawFuture.get()
-        if (error == null || error) {
+    override suspend fun consumeQuestItems(player: Player): Boolean {
+        val withdrawResult =
+            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 100 * 9, "Homes two quest claimed", null)
+        if (withdrawResult.isFailure) {
             return false
         }
 
-        player.level -= 100
+        runOnMainThread {
+            player.level -= 100
+        }
 
         return true
     }
@@ -80,7 +88,7 @@ class HomesTwo : Quest {
         }
     }
 
-    override fun getRequirements(player: Player): Array<Requirement>? {
+    override suspend fun getRequirements(player: Player): Array<Requirement>? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
@@ -88,7 +96,7 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 100),
+            ProgressRequirement("Total Balance", requirements.totalShards, 100 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 1728000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000)
         )
