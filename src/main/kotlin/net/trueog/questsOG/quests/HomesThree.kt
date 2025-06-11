@@ -114,7 +114,7 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.totalShards, 250 * 9),
+            ProgressRequirement("Total Shards", requirements.totalShards, 250 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 8640000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 5000000),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),

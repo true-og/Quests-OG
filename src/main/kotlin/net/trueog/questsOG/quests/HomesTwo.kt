@@ -96,7 +96,7 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.totalShards, 100 * 9),
+            ProgressRequirement("Total Shards", requirements.totalShards, 100 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 1728000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000)
         )
