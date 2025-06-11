@@ -1,11 +1,12 @@
 package net.trueog.questsOG
 
+import kotlinx.coroutines.*
 import me.realized.duels.api.Duels
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.luckperms.api.LuckPerms
-import net.trueog.diamondbankog.DiamondBankAPI
+import net.trueog.diamondbankog.DiamondBankAPIKotlin
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -13,10 +14,12 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class QuestsOG : JavaPlugin() {
     companion object {
+        val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
         lateinit var plugin: QuestsOG
         lateinit var config: Config
         lateinit var redis: Redis
-        lateinit var diamondBankAPI: DiamondBankAPI
+        lateinit var diamondBankAPI: DiamondBankAPIKotlin
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
         lateinit var mobHeads: Plugin
@@ -47,7 +50,7 @@ class QuestsOG : JavaPlugin() {
         }
 
         val diamondBankAPIProvider =
-            server.servicesManager.getRegistration(DiamondBankAPI::class.java)
+            server.servicesManager.getRegistration(DiamondBankAPIKotlin::class.java)
         if (diamondBankAPIProvider == null) {
             logger.severe("DiamondBank-OG API is null")
             Bukkit.getPluginManager().disablePlugin(this)
@@ -85,5 +88,11 @@ class QuestsOG : JavaPlugin() {
 
     override fun onDisable() {
         redis.shutdown()
+
+        scope.cancel()
+
+        runBlocking {
+            scope.coroutineContext[Job]?.join()
+        }
     }
 }

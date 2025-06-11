@@ -4,14 +4,14 @@ import net.trueog.questsOG.Requirement
 import org.bukkit.entity.Player
 
 interface Quest {
-    fun isEligible(player: Player): Boolean?
+    suspend fun isEligible(player: Player): Boolean?
 
     /**
      * @return True if successful
      */
-    fun consumeQuestItems(player: Player): Boolean
+    suspend fun consumeQuestItems(player: Player): Boolean
 
     fun reward(player: Player)
 
-    fun getRequirements(player: Player): Array<Requirement>?
+    suspend fun getRequirements(player: Player): Array<Requirement>?
 }

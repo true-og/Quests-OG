@@ -46,6 +46,7 @@ dependencies {
 
     compileOnly(project(":libs:Utilities-OG"))
     compileOnly(project(":libs:DiamondBank-OG"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 }
 
 configurations.all {

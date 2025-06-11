@@ -1,7 +1,9 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.diamondbankog.PostgreSQL
 import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
@@ -11,7 +13,7 @@ import org.bukkit.entity.Player
 
 class HomesFour : Quest {
     private data class Requirements(
-        val playerTotalBalance: Int,
+        val totalShards: Int,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasFuriousCocktail: Boolean,
@@ -26,12 +28,16 @@ class HomesFour : Quest {
     private val seriousDedicationAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { it.key.toString() == "minecraft:husbandry/obtain_netherite_hoe" }
 
-    private fun fetchRequirements(player: Player): Requirements? {
-        val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
-        val playerTotalBalance = playerTotalBalanceFuture.get()
-        if (playerTotalBalance == null) {
+    private suspend fun fetchRequirements(player: Player): Requirements? {
+        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
+        val playerShards = playerShardsResult.getOrElse {
             return null
         }
+        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
+            return null
+        }
+        val totalShards =
+            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -61,7 +67,7 @@ class HomesFour : Quest {
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
         return Requirements(
-            playerTotalBalance,
+            totalShards,
             ticksPlayed,
             totalCm,
             furiousCocktailAdvancementProgress.isDone,
@@ -72,14 +78,14 @@ class HomesFour : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean? {
+    override suspend fun isEligible(player: Player): Boolean? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return requirements.playerTotalBalance >= 1000 &&
+        return requirements.totalShards >= 1000 * 9 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
                 requirements.totalCm / 100.0 >= 200000 &&
                 requirements.hasFuriousCocktail &&
@@ -89,14 +95,16 @@ class HomesFour : Quest {
                 requirements.duelsWins >= 50
     }
 
-    override fun consumeQuestItems(player: Player): Boolean {
-        val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 1000)
-        val error = withdrawFuture.get()
-        if (error == null || error) {
+    override suspend fun consumeQuestItems(player: Player): Boolean {
+        val withdrawResult =
+            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 1000 * 9, "Homes four quest claimed", null)
+        if (withdrawResult.isFailure) {
             return false
         }
 
-        player.level -= 150
+        runOnMainThread {
+            player.level -= 150
+        }
 
         return true
     }
@@ -111,7 +119,7 @@ class HomesFour : Quest {
         }
     }
 
-    override fun getRequirements(player: Player): Array<Requirement>? {
+    override suspend fun getRequirements(player: Player): Array<Requirement>? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
@@ -119,7 +127,7 @@ class HomesFour : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 1000),
+            ProgressRequirement("Total Balance", requirements.totalShards, 1000 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 17280000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 20000000),
             BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),

@@ -1,6 +1,8 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.diamondbankog.PostgreSQL
+import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
@@ -12,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 
 class HomesSix : Quest {
     private data class Requirements(
-        val playerTotalBalance: Int,
+        val totalShards: Int,
         val ticksPlayed: Int,
         val walkOnWaterOneCm: Int,
         val walkUnderWaterOneCm: Int,
@@ -42,12 +44,16 @@ class HomesSix : Quest {
         Material.MUSIC_DISC_5
     )
 
-    private fun fetchRequirements(player: Player): Requirements? {
-        val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
-        val playerTotalBalance = playerTotalBalanceFuture.get()
-        if (playerTotalBalance == null) {
+    private suspend fun fetchRequirements(player: Player): Requirements? {
+        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
+        val playerShards = playerShardsResult.getOrElse {
             return null
         }
+        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
+            return null
+        }
+        val totalShards =
+            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -76,7 +82,7 @@ class HomesSix : Quest {
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
         return Requirements(
-            playerTotalBalance,
+            totalShards,
             ticksPlayed,
             walkOnWaterOneCm,
             walkUnderWaterOneCm,
@@ -91,14 +97,14 @@ class HomesSix : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean? {
+    override suspend fun isEligible(player: Player): Boolean? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return requirements.playerTotalBalance >= 5000 &&
+        return requirements.totalShards >= 5000 * 9 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
                 requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
                 requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
@@ -111,27 +117,29 @@ class HomesSix : Quest {
                 requirements.duelsWins >= 300
     }
 
-    override fun consumeQuestItems(player: Player): Boolean {
-        val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 5000)
-        val error = withdrawFuture.get()
-        if (error == null || error) {
+    override suspend fun consumeQuestItems(player: Player): Boolean {
+        val withdrawResult =
+            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 5000 * 9, "Homes six quest claimed", null)
+        if (withdrawResult.isFailure) {
             return false
         }
 
-        player.level -= 250
+        return runOnMainThread {
+            player.level -= 250
 
-        val removed = mutableSetOf<Material>()
+            val removed = mutableSetOf<Material>()
 
-        for (itemStack in player.inventory.filterNotNull()) {
-            if (itemStack.type in neededDiscs && itemStack.type !in removed) {
-                itemStack.amount -= 1
-                removed += itemStack.type
+            for (itemStack in player.inventory.filterNotNull()) {
+                if (itemStack.type in neededDiscs && itemStack.type !in removed) {
+                    itemStack.amount -= 1
+                    removed += itemStack.type
+                }
             }
+
+            val notRemoved = player.inventory.removeItem(ItemStack(Material.DRAGON_EGG, 5))
+
+            notRemoved.isEmpty()
         }
-
-        val notRemoved = player.inventory.removeItem(ItemStack(Material.DRAGON_EGG, 5))
-
-        return notRemoved.isEmpty()
     }
 
     override fun reward(player: Player) {
@@ -144,7 +152,7 @@ class HomesSix : Quest {
         }
     }
 
-    override fun getRequirements(player: Player): Array<Requirement>? {
+    override suspend fun getRequirements(player: Player): Array<Requirement>? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
@@ -152,7 +160,7 @@ class HomesSix : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 5000),
+            ProgressRequirement("Total Balance", requirements.totalShards, 5000 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 51840000),
             ProgressRequirement("Cm Walked on Water", requirements.walkOnWaterOneCm, 1000000),
             ProgressRequirement("Cm Walked under Water", requirements.walkUnderWaterOneCm, 1000000),

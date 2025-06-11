@@ -1,7 +1,9 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
+import net.trueog.diamondbankog.PostgreSQL
 import net.trueog.questsOG.BooleanRequirement
+import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
 import net.trueog.questsOG.Requirement
@@ -14,7 +16,7 @@ import org.bukkit.persistence.PersistentDataType
 
 class HomesFive : Quest {
     private data class Requirements(
-        val playerTotalBalance: Int,
+        val totalShards: Int,
         val ticksPlayed: Int,
         val pigOneCm: Int,
         val striderOneCm: Int,
@@ -43,12 +45,16 @@ class HomesFive : Quest {
     private val monstersHuntedAdvancement = Bukkit.getServer().advancementIterator().asSequence()
         .single { advancement -> advancement.key.toString() == "minecraft:adventure/kill_all_mobs" }
 
-    private fun fetchRequirements(player: Player): Requirements? {
-        val playerTotalBalanceFuture = QuestsOG.diamondBankAPI.getPlayerTotalBalance(player.uniqueId)
-        val playerTotalBalance = playerTotalBalanceFuture.get()
-        if (playerTotalBalance == null) {
+    private suspend fun fetchRequirements(player: Player): Requirements? {
+        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
+        val playerShards = playerShardsResult.getOrElse {
             return null
         }
+        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
+            return null
+        }
+        val totalShards =
+            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 
@@ -83,7 +89,7 @@ class HomesFive : Quest {
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
         return Requirements(
-            playerTotalBalance,
+            totalShards,
             ticksPlayed,
             pigOneCm,
             striderOneCm,
@@ -102,14 +108,14 @@ class HomesFive : Quest {
         )
     }
 
-    override fun isEligible(player: Player): Boolean? {
+    override suspend fun isEligible(player: Player): Boolean? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
             return null
         }
 
-        return requirements.playerTotalBalance >= 2500 &&
+        return requirements.totalShards >= 2500 * 9 &&
                 requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
                 requirements.pigOneCm / 100000.0 >= 5 &&
                 requirements.striderOneCm / 100000.0 >= 1 &&
@@ -127,14 +133,16 @@ class HomesFive : Quest {
                 requirements.duelsWins >= 150
     }
 
-    override fun consumeQuestItems(player: Player): Boolean {
-        val withdrawFuture = QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 2500)
-        val error = withdrawFuture.get()
-        if (error == null || error) {
+    override suspend fun consumeQuestItems(player: Player): Boolean {
+        val withdrawResult =
+            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 2500 * 9, "Homes five quest claimed", null)
+        if (withdrawResult.isFailure) {
             return false
         }
 
-        player.level -= 200
+        runOnMainThread {
+            player.level -= 200
+        }
 
         return true
     }
@@ -149,7 +157,7 @@ class HomesFive : Quest {
         }
     }
 
-    override fun getRequirements(player: Player): Array<Requirement>? {
+    override suspend fun getRequirements(player: Player): Array<Requirement>? {
         val requirements = fetchRequirements(player)
 
         if (requirements == null) {
@@ -157,7 +165,7 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.playerTotalBalance, 2500),
+            ProgressRequirement("Total Balance", requirements.totalShards, 2500 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 25920000),
             ProgressRequirement("Cm Travelled on Pig", requirements.pigOneCm, 500000),
             ProgressRequirement("Cm Travelled on Strider", requirements.striderOneCm, 100000),
