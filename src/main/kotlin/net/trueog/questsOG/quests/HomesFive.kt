@@ -165,7 +165,7 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.totalShards, 2500 * 9),
+            ProgressRequirement("Total Shards", requirements.totalShards, 2500 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 25920000),
             ProgressRequirement("Cm Travelled on Pig", requirements.pigOneCm, 500000),
             ProgressRequirement("Cm Travelled on Strider", requirements.striderOneCm, 100000),

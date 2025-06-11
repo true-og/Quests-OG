@@ -127,7 +127,7 @@ class HomesFour : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.totalShards, 1000 * 9),
+            ProgressRequirement("Total Shards", requirements.totalShards, 1000 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 17280000),
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 20000000),
             BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),

@@ -160,7 +160,7 @@ class HomesSix : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Balance", requirements.totalShards, 5000 * 9),
+            ProgressRequirement("Total Shards", requirements.totalShards, 5000 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 51840000),
             ProgressRequirement("Cm Walked on Water", requirements.walkOnWaterOneCm, 1000000),
             ProgressRequirement("Cm Walked under Water", requirements.walkUnderWaterOneCm, 1000000),
