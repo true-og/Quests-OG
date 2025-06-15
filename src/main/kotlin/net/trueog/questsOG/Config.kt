@@ -15,7 +15,6 @@ class Config {
             QuestsOG.plugin.saveDefaultConfig()
         }
         val config = YamlConfiguration.loadConfiguration(file)
-        config.save(file)
 
         try {
             redisUrl = config.get("redisUrl") as String
