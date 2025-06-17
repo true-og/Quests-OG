@@ -6,9 +6,7 @@ import io.lettuce.core.RedisConnectionException
 class Redis {
     private val redisClient: RedisClient = RedisClient.create(QuestsOG.config.redisUrl)
 
-    /**
-     * @return True if successful
-     */
+    /** @return True if successful */
     fun testConnection(): Boolean {
         try {
             val connection = redisClient.connect()

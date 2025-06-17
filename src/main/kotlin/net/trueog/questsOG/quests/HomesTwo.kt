@@ -15,14 +15,15 @@ class HomesTwo : Quest {
         val ticksPlayed: Int,
         val totalCm: Int,
         val levels: Int,
-        val duelsWins: Int
+        val duelsWins: Int,
     )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards = playerShardsResult.getOrElse {
-            return null
-        }
+        val playerShards =
+            playerShardsResult.getOrElse {
+                return null
+            }
         if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
             return null
         }
@@ -45,7 +46,19 @@ class HomesTwo : Quest {
         val swimOneCm = player.getStatistic(Statistic.SWIM_ONE_CM)
         val striderOneCm = player.getStatistic(Statistic.STRIDER_ONE_CM)
         val totalCm =
-            walkOneCm + walkOnWaterOneCm + climbOneCm + walkUnderWaterOneCm + minecartOneCm + boatOneCm + pigOneCm + horseOneCm + sprintOneCm + crouchOneCm + aviateOneCm + swimOneCm + striderOneCm
+            walkOneCm +
+                walkOnWaterOneCm +
+                climbOneCm +
+                walkUnderWaterOneCm +
+                minecartOneCm +
+                boatOneCm +
+                pigOneCm +
+                horseOneCm +
+                sprintOneCm +
+                crouchOneCm +
+                aviateOneCm +
+                swimOneCm +
+                striderOneCm
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
@@ -60,10 +73,10 @@ class HomesTwo : Quest {
         }
 
         return requirements.totalShards >= 100 * 9 &&
-                requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
-                requirements.totalCm / 100.0 >= 10000 &&
-                requirements.levels >= 50 &&
-                requirements.duelsWins >= 10
+            requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
+            requirements.totalCm / 100.0 >= 10000 &&
+            requirements.levels >= 50 &&
+            requirements.duelsWins >= 10
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
@@ -73,9 +86,7 @@ class HomesTwo : Quest {
             return false
         }
 
-        runOnMainThread {
-            player.level -= 100
-        }
+        runOnMainThread { player.level -= 100 }
 
         return true
     }
@@ -83,9 +94,7 @@ class HomesTwo : Quest {
     override fun reward(player: Player) {
         val homesTwoNode = PermissionNode.builder("essentials.sethome.multiple.homes-2").build()
 
-        QuestsOG.luckPerms.userManager.modifyUser(player.uniqueId) { user ->
-            user.data().add(homesTwoNode)
-        }
+        QuestsOG.luckPerms.userManager.modifyUser(player.uniqueId) { user -> user.data().add(homesTwoNode) }
     }
 
     override suspend fun getRequirements(player: Player): Array<Requirement>? {
@@ -98,7 +107,7 @@ class HomesTwo : Quest {
         return arrayOf(
             ProgressRequirement("Total Shards", requirements.totalShards, 100 * 9),
             ProgressRequirement("Ticks Played", requirements.ticksPlayed, 1728000),
-            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000)
+            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000),
         )
     }
 }

@@ -8,7 +8,9 @@ object HomesProgression : Progression {
 
     override fun getNextQuest(player: Player): Quest? {
         val homePermission =
-            player.effectivePermissions.singleOrNull { permission -> permission.permission.startsWith("essentials.sethome.multiple.homes-") }
+            player.effectivePermissions.singleOrNull { permission ->
+                permission.permission.startsWith("essentials.sethome.multiple.homes-")
+            }
         val nextQuestIndex = homePermission?.permission?.takeLast(1)?.toInt()?.minus(1) ?: 0
 
         if (nextQuestIndex + 1 > quests.size) {
