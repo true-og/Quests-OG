@@ -8,12 +8,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class ClaimQuest : CommandExecutor {
-    override fun onCommand(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<out String>?
-    ): Boolean {
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             sender.sendMessage("You can only execute this command as a player.")
             return true
@@ -50,10 +45,12 @@ class ClaimQuest : CommandExecutor {
                 var requirementsMessage = ""
                 for (requirement in requirements) {
                     if (requirement is BooleanRequirement) {
-                        requirementsMessage += "${if (requirement.met) "<green>" else "<red>"}${requirement.name}: ${requirement.met}<reset> |"
+                        requirementsMessage +=
+                            "${if (requirement.met) "<green>" else "<red>"}${requirement.name}: ${requirement.met}<reset> |"
                     }
                     if (requirement is ProgressRequirement) {
-                        requirementsMessage += "${if (requirement.current >= requirement.target) "<green>" else "<red>"}${requirement.name}: ${requirement.current}/${requirement.target}<reset> | "
+                        requirementsMessage +=
+                            "${if (requirement.current >= requirement.target) "<green>" else "<red>"}${requirement.name}: ${requirement.current}/${requirement.target}<reset> | "
                     }
                 }
                 sender.sendMessage(QuestsOG.mm.deserialize(requirementsMessage))
@@ -61,5 +58,4 @@ class ClaimQuest : CommandExecutor {
         }
         return true
     }
-
 }

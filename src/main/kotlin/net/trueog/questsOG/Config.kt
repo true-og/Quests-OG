@@ -1,21 +1,18 @@
 package net.trueog.questsOG
 
-import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
+import org.bukkit.configuration.file.YamlConfiguration
 
 class Config {
     lateinit var redisUrl: String
 
-    /**
-     * @return True if successful
-     */
+    /** @return True if successful */
     fun load(): Boolean {
         val file = File(QuestsOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
             QuestsOG.plugin.saveDefaultConfig()
         }
         val config = YamlConfiguration.loadConfiguration(file)
-        config.save(file)
 
         try {
             redisUrl = config.get("redisUrl") as String

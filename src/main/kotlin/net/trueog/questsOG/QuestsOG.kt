@@ -11,7 +11,6 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
-
 class QuestsOG : JavaPlugin() {
     companion object {
         val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -23,14 +22,10 @@ class QuestsOG : JavaPlugin() {
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
         lateinit var mobHeads: Plugin
-        var mm = MiniMessage.builder()
-            .tags(
-                TagResolver.builder()
-                    .resolver(StandardTags.color())
-                    .resolver(StandardTags.reset())
-                    .build()
-            )
-            .build()
+        var mm =
+            MiniMessage.builder()
+                .tags(TagResolver.builder().resolver(StandardTags.color()).resolver(StandardTags.reset()).build())
+                .build()
     }
 
     override fun onEnable() {
@@ -49,8 +44,7 @@ class QuestsOG : JavaPlugin() {
             return
         }
 
-        val diamondBankAPIProvider =
-            server.servicesManager.getRegistration(DiamondBankAPIKotlin::class.java)
+        val diamondBankAPIProvider = server.servicesManager.getRegistration(DiamondBankAPIKotlin::class.java)
         if (diamondBankAPIProvider == null) {
             logger.severe("DiamondBank-OG API is null")
             Bukkit.getPluginManager().disablePlugin(this)
@@ -91,8 +85,6 @@ class QuestsOG : JavaPlugin() {
 
         scope.cancel()
 
-        runBlocking {
-            scope.coroutineContext[Job]?.join()
-        }
+        runBlocking { scope.coroutineContext[Job]?.join() }
     }
 }

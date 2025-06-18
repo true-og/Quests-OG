@@ -18,17 +18,20 @@ class HomesThree : Quest {
         val totalCm: Int,
         val hasBeaconator: Boolean,
         val levels: Int,
-        val duelsWins: Int
+        val duelsWins: Int,
     )
 
-    private val beaconatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:nether/create_full_beacon" }
+    private val beaconatorAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single {
+            it.key.toString() == "minecraft:nether/create_full_beacon"
+        }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards = playerShardsResult.getOrElse {
-            return null
-        }
+        val playerShards =
+            playerShardsResult.getOrElse {
+                return null
+            }
         if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
             return null
         }
@@ -51,20 +54,25 @@ class HomesThree : Quest {
         val swimOneCm = player.getStatistic(Statistic.SWIM_ONE_CM)
         val striderOneCm = player.getStatistic(Statistic.STRIDER_ONE_CM)
         val totalCm =
-            walkOneCm + walkOnWaterOneCm + climbOneCm + walkUnderWaterOneCm + minecartOneCm + boatOneCm + pigOneCm + horseOneCm + sprintOneCm + crouchOneCm + aviateOneCm + swimOneCm + striderOneCm
+            walkOneCm +
+                walkOnWaterOneCm +
+                climbOneCm +
+                walkUnderWaterOneCm +
+                minecartOneCm +
+                boatOneCm +
+                pigOneCm +
+                horseOneCm +
+                sprintOneCm +
+                crouchOneCm +
+                aviateOneCm +
+                swimOneCm +
+                striderOneCm
 
         val advancementProgress = player.getAdvancementProgress(beaconatorAdvancement)
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(
-            totalShards,
-            ticksPlayed,
-            totalCm,
-            advancementProgress.isDone,
-            player.level,
-            duelsWins
-        )
+        return Requirements(totalShards, ticksPlayed, totalCm, advancementProgress.isDone, player.level, duelsWins)
     }
 
     override suspend fun isEligible(player: Player): Boolean? {
@@ -75,11 +83,11 @@ class HomesThree : Quest {
         }
 
         return requirements.totalShards >= 250 * 9 &&
-                requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
-                requirements.totalCm / 100.0 >= 50000 && // 100k?
-                requirements.hasBeaconator &&
-                requirements.levels >= 100 &&
-                requirements.duelsWins >= 20
+            requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
+            requirements.totalCm / 100.0 >= 50000 && // 100k?
+            requirements.hasBeaconator &&
+            requirements.levels >= 100 &&
+            requirements.duelsWins >= 20
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
@@ -89,9 +97,7 @@ class HomesThree : Quest {
             return false
         }
 
-        runOnMainThread {
-            player.level -= 100
-        }
+        runOnMainThread { player.level -= 100 }
 
         return true
     }
@@ -119,7 +125,7 @@ class HomesThree : Quest {
             ProgressRequirement("Total Cm Travelled", requirements.totalCm, 5000000),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),
             ProgressRequirement("Levels", requirements.levels, 100),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 20)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 20),
         )
     }
 }

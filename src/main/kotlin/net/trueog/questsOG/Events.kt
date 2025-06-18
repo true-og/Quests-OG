@@ -22,10 +22,14 @@ class Events : Listener {
 
         val translatableDeathMessageArgs = translatableDeathMessage.args()
 
-        if (translatableDeathMessage.key() == "death.attack.hotFloor.player" && translatableDeathMessageArgs.size >= 2 && (translatableDeathMessageArgs[1] as TranslatableComponent).key() == "entity.minecraft.zoglin") {
+        if (
+            translatableDeathMessage.key() == "death.attack.hotFloor.player" &&
+                translatableDeathMessageArgs.size >= 2 &&
+                (translatableDeathMessageArgs[1] as TranslatableComponent).key() == "entity.minecraft.zoglin"
+        ) {
             QuestsOG.redis.setValue(
                 "questsog:${event.player.uniqueId}:deaths:diedToMagmaBlockWhileFightingZoglin",
-                "true"
+                "true",
             )
             return
         }

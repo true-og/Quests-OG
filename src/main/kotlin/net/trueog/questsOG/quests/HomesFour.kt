@@ -20,19 +20,24 @@ class HomesFour : Quest {
         val hasSeriousDedication: Boolean,
         val levels: Int,
         val hasDiedToFellAccidentWater: Boolean,
-        val duelsWins: Int
+        val duelsWins: Int,
     )
 
-    private val furiousCocktailAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:nether/all_potions" }
-    private val seriousDedicationAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { it.key.toString() == "minecraft:husbandry/obtain_netherite_hoe" }
+    private val furiousCocktailAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single {
+            it.key.toString() == "minecraft:nether/all_potions"
+        }
+    private val seriousDedicationAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single {
+            it.key.toString() == "minecraft:husbandry/obtain_netherite_hoe"
+        }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards = playerShardsResult.getOrElse {
-            return null
-        }
+        val playerShards =
+            playerShardsResult.getOrElse {
+                return null
+            }
         if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
             return null
         }
@@ -55,7 +60,19 @@ class HomesFour : Quest {
         val swimOneCm = player.getStatistic(Statistic.SWIM_ONE_CM)
         val striderOneCm = player.getStatistic(Statistic.STRIDER_ONE_CM)
         val totalCm =
-            walkOneCm + walkOnWaterOneCm + climbOneCm + walkUnderWaterOneCm + minecartOneCm + boatOneCm + pigOneCm + horseOneCm + sprintOneCm + crouchOneCm + aviateOneCm + swimOneCm + striderOneCm
+            walkOneCm +
+                walkOnWaterOneCm +
+                climbOneCm +
+                walkUnderWaterOneCm +
+                minecartOneCm +
+                boatOneCm +
+                pigOneCm +
+                horseOneCm +
+                sprintOneCm +
+                crouchOneCm +
+                aviateOneCm +
+                swimOneCm +
+                striderOneCm
 
         val furiousCocktailAdvancementProgress = player.getAdvancementProgress(furiousCocktailAdvancement)
 
@@ -74,7 +91,7 @@ class HomesFour : Quest {
             seriousDedicationAdvancementProgress.isDone,
             player.level,
             hasDiedToFellAccidentWater,
-            duelsWins
+            duelsWins,
         )
     }
 
@@ -86,13 +103,13 @@ class HomesFour : Quest {
         }
 
         return requirements.totalShards >= 1000 * 9 &&
-                requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
-                requirements.totalCm / 100.0 >= 200000 &&
-                requirements.hasFuriousCocktail &&
-                requirements.hasSeriousDedication &&
-                requirements.levels >= 150 &&
-                requirements.hasDiedToFellAccidentWater &&
-                requirements.duelsWins >= 50
+            requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
+            requirements.totalCm / 100.0 >= 200000 &&
+            requirements.hasFuriousCocktail &&
+            requirements.hasSeriousDedication &&
+            requirements.levels >= 150 &&
+            requirements.hasDiedToFellAccidentWater &&
+            requirements.duelsWins >= 50
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
@@ -102,9 +119,7 @@ class HomesFour : Quest {
             return false
         }
 
-        runOnMainThread {
-            player.level -= 150
-        }
+        runOnMainThread { player.level -= 150 }
 
         return true
     }
@@ -134,7 +149,7 @@ class HomesFour : Quest {
             BooleanRequirement("Serious Dedication", requirements.hasSeriousDedication),
             ProgressRequirement("Levels", requirements.levels, 150),
             BooleanRequirement("Died to \"death.fell.accident.water\"", requirements.hasDiedToFellAccidentWater),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 50)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 50),
         )
     }
 }

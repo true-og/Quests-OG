@@ -31,25 +31,34 @@ class HomesFive : Quest {
         val levels: Int,
         val fishCaught: Int,
         val hasVillagerHead: Boolean,
-        val duelsWins: Int
+        val duelsWins: Int,
     )
 
     val customMobHeadKey = NamespacedKey(QuestsOG.mobHeads, "customMobHead")
 
-    private val cutestPredatorAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { advancement -> advancement.key.toString() == "minecraft:husbandry/axolotl_in_a_bucket" }
-    private val twoByTwoAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { advancement -> advancement.key.toString() == "minecraft:husbandry/bred_all_animals" }
-    private val completeCatalogueAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { advancement -> advancement.key.toString() == "minecraft:husbandry/complete_catalogue" }
-    private val monstersHuntedAdvancement = Bukkit.getServer().advancementIterator().asSequence()
-        .single { advancement -> advancement.key.toString() == "minecraft:adventure/kill_all_mobs" }
+    private val cutestPredatorAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single { advancement ->
+            advancement.key.toString() == "minecraft:husbandry/axolotl_in_a_bucket"
+        }
+    private val twoByTwoAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single { advancement ->
+            advancement.key.toString() == "minecraft:husbandry/bred_all_animals"
+        }
+    private val completeCatalogueAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single { advancement ->
+            advancement.key.toString() == "minecraft:husbandry/complete_catalogue"
+        }
+    private val monstersHuntedAdvancement =
+        Bukkit.getServer().advancementIterator().asSequence().single { advancement ->
+            advancement.key.toString() == "minecraft:adventure/kill_all_mobs"
+        }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards = playerShardsResult.getOrElse {
-            return null
-        }
+        val playerShards =
+            playerShardsResult.getOrElse {
+                return null
+            }
         if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
             return null
         }
@@ -81,10 +90,11 @@ class HomesFive : Quest {
 
         val fishCaught = player.getStatistic(Statistic.FISH_CAUGHT)
 
-        val hasVillagerHead = player.inventory.filterNotNull().any {
-            val data = it.itemMeta.persistentDataContainer.get(customMobHeadKey, PersistentDataType.STRING)
-            data?.startsWith("VILLAGER") == true
-        }
+        val hasVillagerHead =
+            player.inventory.filterNotNull().any {
+                val data = it.itemMeta.persistentDataContainer.get(customMobHeadKey, PersistentDataType.STRING)
+                data?.startsWith("VILLAGER") == true
+            }
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
@@ -104,7 +114,7 @@ class HomesFive : Quest {
             player.level,
             fishCaught,
             hasVillagerHead,
-            duelsWins
+            duelsWins,
         )
     }
 
@@ -116,21 +126,21 @@ class HomesFive : Quest {
         }
 
         return requirements.totalShards >= 2500 * 9 &&
-                requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
-                requirements.pigOneCm / 100000.0 >= 5 &&
-                requirements.striderOneCm / 100000.0 >= 1 &&
-                requirements.dolphinKills >= 50 &&
-                requirements.zoglinKills >= 50 &&
-                requirements.hasCutestPredator &&
-                requirements.hasTwoByTwo &&
-                requirements.hasCompleteCatalogue &&
-                requirements.hasMonstersHunted &&
-                requirements.hasDiedToFellWhileClimbing &&
-                requirements.hasDiedToMagmaBlockWhileFightingZoglin &&
-                requirements.levels >= 200 &&
-                requirements.fishCaught >= 2000 &&
-                requirements.hasVillagerHead &&
-                requirements.duelsWins >= 150
+            requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
+            requirements.pigOneCm / 100000.0 >= 5 &&
+            requirements.striderOneCm / 100000.0 >= 1 &&
+            requirements.dolphinKills >= 50 &&
+            requirements.zoglinKills >= 50 &&
+            requirements.hasCutestPredator &&
+            requirements.hasTwoByTwo &&
+            requirements.hasCompleteCatalogue &&
+            requirements.hasMonstersHunted &&
+            requirements.hasDiedToFellWhileClimbing &&
+            requirements.hasDiedToMagmaBlockWhileFightingZoglin &&
+            requirements.levels >= 200 &&
+            requirements.fishCaught >= 2000 &&
+            requirements.hasVillagerHead &&
+            requirements.duelsWins >= 150
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
@@ -140,9 +150,7 @@ class HomesFive : Quest {
             return false
         }
 
-        runOnMainThread {
-            player.level -= 200
-        }
+        runOnMainThread { player.level -= 200 }
 
         return true
     }
@@ -178,12 +186,12 @@ class HomesFive : Quest {
             BooleanRequirement("Died to \"fell while climbing\"", requirements.hasDiedToFellWhileClimbing),
             BooleanRequirement(
                 "Died to \"walked into the danger zone due to Zoglin\"",
-                requirements.hasDiedToMagmaBlockWhileFightingZoglin
+                requirements.hasDiedToMagmaBlockWhileFightingZoglin,
             ),
             ProgressRequirement("Levels", requirements.levels, 200),
             ProgressRequirement("Fish Caught", requirements.fishCaught, 2000),
             BooleanRequirement("Has Villager Head", requirements.hasVillagerHead),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 150)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 150),
         )
     }
 }

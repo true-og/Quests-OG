@@ -20,35 +20,37 @@ class HomesSix : Quest {
         val walkUnderWaterOneCm: Int,
         val stoneLikePickedUp: Int,
         val discs: Int,
-//        val hasLeftConfinesOfWorldWhileFightingEnderDragon: Boolean,
+        //        val hasLeftConfinesOfWorldWhileFightingEnderDragon: Boolean,
         val finishedAdvancements: Int,
         val obsidianMined: Int,
         val dragonEggs: Int,
         val levels: Int,
-        val duelsWins: Int
+        val duelsWins: Int,
     )
 
-    private val neededDiscs = setOf(
-        Material.MUSIC_DISC_13,
-        Material.MUSIC_DISC_CAT,
-        Material.MUSIC_DISC_BLOCKS,
-        Material.MUSIC_DISC_CHIRP,
-        Material.MUSIC_DISC_FAR,
-        Material.MUSIC_DISC_MALL,
-        Material.MUSIC_DISC_MELLOHI,
-        Material.MUSIC_DISC_STAL,
-        Material.MUSIC_DISC_STRAD,
-        Material.MUSIC_DISC_WARD,
-        Material.MUSIC_DISC_11,
-        Material.MUSIC_DISC_WAIT,
-        Material.MUSIC_DISC_5
-    )
+    private val neededDiscs =
+        setOf(
+            Material.MUSIC_DISC_13,
+            Material.MUSIC_DISC_CAT,
+            Material.MUSIC_DISC_BLOCKS,
+            Material.MUSIC_DISC_CHIRP,
+            Material.MUSIC_DISC_FAR,
+            Material.MUSIC_DISC_MALL,
+            Material.MUSIC_DISC_MELLOHI,
+            Material.MUSIC_DISC_STAL,
+            Material.MUSIC_DISC_STRAD,
+            Material.MUSIC_DISC_WARD,
+            Material.MUSIC_DISC_11,
+            Material.MUSIC_DISC_WAIT,
+            Material.MUSIC_DISC_5,
+        )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards = playerShardsResult.getOrElse {
-            return null
-        }
+        val playerShards =
+            playerShardsResult.getOrElse {
+                return null
+            }
         if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
             return null
         }
@@ -65,15 +67,17 @@ class HomesSix : Quest {
         val cobblestoneMined = player.getStatistic(Statistic.MINE_BLOCK, Material.COBBLESTONE)
         val stoneLikeMined = stoneMined + cobblestoneMined
 
-        val discs = player.inventory
-            .filterNotNull()
-            .filter { it.type in neededDiscs }.distinctBy { it.type }
+        val discs = player.inventory.filterNotNull().filter { it.type in neededDiscs }.distinctBy { it.type }
 
-//        val hasLeftConfinesOfWorldWhileFightingEnderDragon =
-//            QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:leftConfinesOfWorldWhileFightingEnderDragon") == "true"
+        //        val hasLeftConfinesOfWorldWhileFightingEnderDragon =
+        //
+        // QuestsOG.redis.getValue("questsog:${player.uniqueId}:deaths:leftConfinesOfWorldWhileFightingEnderDragon") ==
+        // "true"
 
-        val finishedAdvancements = Bukkit.getServer().advancementIterator().asSequence().filterNotNull()
-            .filter { player.getAdvancementProgress(it).isDone }
+        val finishedAdvancements =
+            Bukkit.getServer().advancementIterator().asSequence().filterNotNull().filter {
+                player.getAdvancementProgress(it).isDone
+            }
 
         val obsidianMined = player.getStatistic(Statistic.MINE_BLOCK, Material.OBSIDIAN)
 
@@ -88,12 +92,12 @@ class HomesSix : Quest {
             walkUnderWaterOneCm,
             stoneLikeMined,
             discs.size,
-//            hasLeftConfinesOfWorldWhileFightingEnderDragon,
+            //            hasLeftConfinesOfWorldWhileFightingEnderDragon,
             finishedAdvancements.count(),
             obsidianMined,
             dragonEggs,
             player.level,
-            duelsWins
+            duelsWins,
         )
     }
 
@@ -105,16 +109,16 @@ class HomesSix : Quest {
         }
 
         return requirements.totalShards >= 5000 * 9 &&
-                requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
-                requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
-                requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
-                requirements.discs >= 13 &&
-//                requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon &&
-                requirements.finishedAdvancements >= 1179 &&
-                requirements.obsidianMined >= 1500 &&
-                requirements.dragonEggs >= 5 &&
-                requirements.levels >= 250 &&
-                requirements.duelsWins >= 300
+            requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
+            requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
+            requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
+            requirements.discs >= 13 &&
+            //                requirements.hasLeftConfinesOfWorldWhileFightingEnderDragon &&
+            requirements.finishedAdvancements >= 1179 &&
+            requirements.obsidianMined >= 1500 &&
+            requirements.dragonEggs >= 5 &&
+            requirements.levels >= 250 &&
+            requirements.duelsWins >= 300
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
@@ -169,7 +173,7 @@ class HomesSix : Quest {
             ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
             ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),
             ProgressRequirement("Levels", requirements.levels, 250),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 300)
+            ProgressRequirement("Duels Wins", requirements.duelsWins, 300),
         )
     }
 }

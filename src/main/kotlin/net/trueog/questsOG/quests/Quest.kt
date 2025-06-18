@@ -6,9 +6,7 @@ import org.bukkit.entity.Player
 interface Quest {
     suspend fun isEligible(player: Player): Boolean?
 
-    /**
-     * @return True if successful
-     */
+    /** @return True if successful */
     suspend fun consumeQuestItems(player: Player): Boolean
 
     fun reward(player: Player)
