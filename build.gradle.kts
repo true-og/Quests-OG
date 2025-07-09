@@ -14,13 +14,23 @@ val commitHash =
         process.destroy()
         output.trim()
     }
+    
+java {
+    sourceCompatibility = JavaVersion.VERSION_17 // Compile with JDK 17 compatibility.
 
-val apiVersion = "1.19"
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17)) // Use JDK 17.
+        vendor.set(JvmVendorSpec.GRAAL_VM) // Use GraalVM CE.
+    }
+}
 
-group = "net.trueog"
+kotlin { jvmToolchain(17) }
+
+group = "net.trueog.quests-og" // Declare bundle identifier.
 
 version = "$apiVersion-$commitHash"
 
+val apiVersion = "1.19" // Declare minecraft server target version.
 repositories {
     mavenCentral()
     gradlePluginPortal()
@@ -32,11 +42,11 @@ repositories {
 
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare purpur API version to be packaged.
-    compileOnly("net.luckperms:api:5.5")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
-    compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1")
+    compileOnly("net.luckperms:api:5.5") // Import LuckPerms API.
+    implementation("org.jetbrains.kotlin:kotlin-stdlib") // Import Kotlin standard library.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import Kotlin async library.
+    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE") // Import Lettuce API for keydb.
+    compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1") // Import Duels API (API-compatible with Duels-OG).
     compileOnly(project(":libs:Utilities-OG")) // Import TrueOG Network Utilities-OG API.
     compileOnly(project(":libs:DiamondBank-OG")) // Import TrueOG Network DiamondBank-OG API.
 }
@@ -68,16 +78,9 @@ tasks.processResources {
     from("LICENSE") { into("/") }
 }
 
-tasks.withType<AbstractArchiveTask>().configureEach {
+tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .jars
     isPreserveFileTimestamps = false
     isReproducibleFileOrder = true
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-        vendor = JvmVendorSpec.GRAAL_VM
-    }
 }
 
 spotless {
