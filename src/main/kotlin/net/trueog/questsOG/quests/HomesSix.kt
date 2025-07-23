@@ -1,7 +1,6 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
-import net.trueog.diamondbankog.PostgreSQL
 import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
 import net.trueog.questsOG.QuestsOG
@@ -46,16 +45,10 @@ class HomesSix : Quest {
         )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val playerShardsResult = QuestsOG.diamondBankAPI.getPlayerShards(player.uniqueId, PostgreSQL.ShardType.ALL)
-        val playerShards =
-            playerShardsResult.getOrElse {
+        val totalShards =
+            QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
             }
-        if (playerShards.isNeededShardTypeNull(PostgreSQL.ShardType.ALL)) {
-            return null
-        }
-        val totalShards =
-            playerShards.shardsInBank!! + playerShards.shardsInInventory!! + playerShards.shardsInEnderChest!!
 
         val ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE)
 

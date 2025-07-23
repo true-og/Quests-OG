@@ -33,10 +33,12 @@ class QuestsOG : JavaPlugin() {
     override fun onEnable() {
         plugin = this
 
-        Companion.config = Config.create() ?: run {
-            Bukkit.getPluginManager().disablePlugin(this)
-            return
-        }
+        Companion.config =
+            Config.create()
+                ?: run {
+                    Bukkit.getPluginManager().disablePlugin(this)
+                    return
+                }
 
         redis = Redis()
         if (!redis.testConnection()) {
