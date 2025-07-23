@@ -3,24 +3,26 @@ package net.trueog.questsOG
 import java.io.File
 import org.bukkit.configuration.file.YamlConfiguration
 
-class Config {
+class Config private constructor() {
     lateinit var redisUrl: String
 
-    /** @return True if successful */
-    fun load(): Boolean {
-        val file = File(QuestsOG.plugin.dataFolder, "config.yml")
-        if (!file.exists()) {
-            QuestsOG.plugin.saveDefaultConfig()
-        }
-        val config = YamlConfiguration.loadConfiguration(file)
+    companion object {
+        fun create(): Config? {
+            val config = Config()
+            val file = File(QuestsOG.plugin.dataFolder, "config.yml")
+            if (!file.exists()) {
+                QuestsOG.plugin.saveDefaultConfig()
+            }
+            val yamlConfig = YamlConfiguration.loadConfiguration(file)
 
-        try {
-            redisUrl = config.get("redisUrl") as String
-        } catch (_: Exception) {
-            QuestsOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
-            return false
-        }
+            try {
+                config.redisUrl = yamlConfig.get("redisUrl") as String
+            } catch (_: Exception) {
+                QuestsOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
+                return null
+            }
 
-        return true
+            return config
+        }
     }
 }

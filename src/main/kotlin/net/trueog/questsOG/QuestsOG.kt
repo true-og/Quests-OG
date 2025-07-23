@@ -26,16 +26,19 @@ class QuestsOG : JavaPlugin() {
             MiniMessage.builder()
                 .tags(TagResolver.builder().resolver(StandardTags.color()).resolver(StandardTags.reset()).build())
                 .build()
+
+        fun isRedisInitialized() = ::redis.isInitialized
     }
 
     override fun onEnable() {
         plugin = this
 
-        Companion.config = Config()
-        if (!Companion.config.load()) {
-            Bukkit.getPluginManager().disablePlugin(this)
-            return
-        }
+        Companion.config =
+            Config.create()
+                ?: run {
+                    Bukkit.getPluginManager().disablePlugin(this)
+                    return
+                }
 
         redis = Redis()
         if (!redis.testConnection()) {
@@ -81,7 +84,9 @@ class QuestsOG : JavaPlugin() {
     }
 
     override fun onDisable() {
-        redis.shutdown()
+        if (isRedisInitialized()) {
+            redis.shutdown()
+        }
 
         scope.cancel()
 
