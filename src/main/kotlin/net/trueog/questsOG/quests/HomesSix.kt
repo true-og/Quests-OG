@@ -157,16 +157,20 @@ class HomesSix : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 5000 * 9),
-            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 51840000),
-            ProgressRequirement("Cm Walked on Water", requirements.walkOnWaterOneCm, 1000000),
-            ProgressRequirement("Cm Walked under Water", requirements.walkUnderWaterOneCm, 1000000),
-            ProgressRequirement("Music Discs", requirements.discs, 13),
-            ProgressRequirement("Finished Advancements", requirements.finishedAdvancements, 1179),
-            ProgressRequirement("Obsidian Mined", requirements.obsidianMined, 1500),
-            ProgressRequirement("Dragon Eggs", requirements.dragonEggs, 5),
-            ProgressRequirement("Levels", requirements.levels, 250),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 300),
+            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 5000L * 9L),
+            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (51840000).toLong()),
+            ProgressRequirement("Cm Walked on Water", (requirements.walkOnWaterOneCm).toLong(), (1000000).toLong()),
+            ProgressRequirement(
+                "Cm Walked under Water",
+                (requirements.walkUnderWaterOneCm).toLong(),
+                (1000000).toLong(),
+            ),
+            ProgressRequirement("Music Discs", (requirements.discs).toLong(), (13).toLong()),
+            ProgressRequirement("Finished Advancements", (requirements.finishedAdvancements).toLong(), (1179).toLong()),
+            ProgressRequirement("Obsidian Mined", (requirements.obsidianMined).toLong(), (1500).toLong()),
+            ProgressRequirement("Dragon Eggs", (requirements.dragonEggs).toLong(), (5).toLong()),
+            ProgressRequirement("Levels", (requirements.levels).toLong(), (250).toLong()),
+            ProgressRequirement("Duels Wins", (requirements.duelsWins).toLong(), (300).toLong()),
         )
     }
 }

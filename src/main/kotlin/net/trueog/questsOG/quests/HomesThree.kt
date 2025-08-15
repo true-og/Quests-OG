@@ -113,12 +113,12 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 250 * 9),
-            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 8640000),
-            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 5000000),
+            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 250L * 9L),
+            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (8640000).toLong()),
+            ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (5000000).toLong()),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),
-            ProgressRequirement("Levels", requirements.levels, 100),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 20),
+            ProgressRequirement("Levels", (requirements.levels).toLong(), (100).toLong()),
+            ProgressRequirement("Duels Wins", (requirements.duelsWins).toLong(), (20).toLong()),
         )
     }
 }

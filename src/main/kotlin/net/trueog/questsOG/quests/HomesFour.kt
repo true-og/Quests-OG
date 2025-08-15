@@ -135,14 +135,14 @@ class HomesFour : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 1000 * 9),
-            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 17280000),
-            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 20000000),
+            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 1000L * 9L),
+            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (17280000).toLong()),
+            ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (20000000).toLong()),
             BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),
             BooleanRequirement("Serious Dedication", requirements.hasSeriousDedication),
-            ProgressRequirement("Levels", requirements.levels, 150),
+            ProgressRequirement("Levels", (requirements.levels).toLong(), (150).toLong()),
             BooleanRequirement("Died to \"death.fell.accident.water\"", requirements.hasDiedToFellAccidentWater),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 50),
+            ProgressRequirement("Duels Wins", (requirements.duelsWins).toLong(), (50).toLong()),
         )
     }
 }

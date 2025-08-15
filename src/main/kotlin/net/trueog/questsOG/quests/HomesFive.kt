@@ -166,12 +166,12 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 2500 * 9),
-            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 25920000),
-            ProgressRequirement("Cm Travelled on Pig", requirements.pigOneCm, 500000),
-            ProgressRequirement("Cm Travelled on Strider", requirements.striderOneCm, 100000),
-            ProgressRequirement("Dolphins Killed", requirements.dolphinKills, 50),
-            ProgressRequirement("Zoglins Killed", requirements.zoglinKills, 50),
+            ProgressRequirement("Total Shards", requirements.totalShards, 2500L * 9L),
+            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (25920000).toLong()),
+            ProgressRequirement("Cm Travelled on Pig", (requirements.pigOneCm).toLong(), (500000).toLong()),
+            ProgressRequirement("Cm Travelled on Strider", (requirements.striderOneCm).toLong(), (100000).toLong()),
+            ProgressRequirement("Dolphins Killed", (requirements.dolphinKills).toLong(), (50).toLong()),
+            ProgressRequirement("Zoglins Killed", (requirements.zoglinKills).toLong(), (50).toLong()),
             BooleanRequirement("The Cutest Predator", requirements.hasCutestPredator),
             BooleanRequirement("Two by Two", requirements.hasTwoByTwo),
             BooleanRequirement("A Complete Catalogue", requirements.hasCompleteCatalogue),
@@ -181,10 +181,10 @@ class HomesFive : Quest {
                 "Died to \"walked into the danger zone due to Zoglin\"",
                 requirements.hasDiedToMagmaBlockWhileFightingZoglin,
             ),
-            ProgressRequirement("Levels", requirements.levels, 200),
-            ProgressRequirement("Fish Caught", requirements.fishCaught, 2000),
+            ProgressRequirement("Levels", (requirements.levels).toLong(), (200).toLong()),
+            ProgressRequirement("Fish Caught", (requirements.fishCaught).toLong(), (2000).toLong()),
             BooleanRequirement("Has Villager Head", requirements.hasVillagerHead),
-            ProgressRequirement("Duels Wins", requirements.duelsWins, 150),
+            ProgressRequirement("Duels Wins", (requirements.duelsWins).toLong(), (150).toLong()),
         )
     }
 }

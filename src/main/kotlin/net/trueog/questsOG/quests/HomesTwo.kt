@@ -98,9 +98,9 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 100 * 9),
-            ProgressRequirement("Ticks Played", requirements.ticksPlayed, 1728000),
-            ProgressRequirement("Total Cm Travelled", requirements.totalCm, 1000000),
+            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 100L * 9L),
+            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (1728000).toLong()),
+            ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (1000000).toLong()),
         )
     }
 }
