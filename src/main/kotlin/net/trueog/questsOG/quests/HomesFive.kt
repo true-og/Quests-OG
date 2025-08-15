@@ -15,7 +15,7 @@ import org.bukkit.persistence.PersistentDataType
 
 class HomesFive : Quest {
     private data class Requirements(
-        val totalShards: Int,
+        val totalShards: Long,
         val ticksPlayed: Int,
         val pigOneCm: Int,
         val striderOneCm: Int,

@@ -12,7 +12,7 @@ import org.bukkit.entity.Player
 
 class HomesFour : Quest {
     private data class Requirements(
-        val totalShards: Int,
+        val totalShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasFuriousCocktail: Boolean,

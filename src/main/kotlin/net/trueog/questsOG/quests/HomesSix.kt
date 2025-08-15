@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 
 class HomesSix : Quest {
     private data class Requirements(
-        val totalShards: Int,
+        val totalShards: Long,
         val ticksPlayed: Int,
         val walkOnWaterOneCm: Int,
         val walkUnderWaterOneCm: Int,
