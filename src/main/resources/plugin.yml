@@ -5,6 +5,7 @@ api-version: '${apiVersion}'
 depend:
   - DiamondBank-OG
   - Utilities-OG
+  - Duels-OG
 commands:
   claimquest:
     description: Claims a quest, duh
