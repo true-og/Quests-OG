@@ -75,7 +75,7 @@ dependencies {
     compileOnly("net.luckperms:api:5.5") // Import LuckPerms API.
     implementation("org.jetbrains.kotlin:kotlin-stdlib") // Import Kotlin standard library.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import Kotlin async library.
-    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE") // Import Lettuce API for keydb.
+    implementation("io.lettuce:lettuce-core:7.2.0.RELEASE") // Import Lettuce API for keydb.
     compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1") // Import Duels API (API-compatible with Duels-OG).
     compileOnlyApi(project(":libs:Utilities-OG")) // Import TrueOG Network Utilities-OG Java API (from source).
     compileOnlyApi(project(":libs:DiamondBank-OG")) {
