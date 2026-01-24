@@ -116,7 +116,7 @@ class HomesSix : Quest {
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
         val withdrawResult =
-            QuestsOG.diamondBankAPI.withdrawFromPlayer(player.uniqueId, 5000 * 9, "Homes six quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 5000 * 9, "Homes six quest claimed", null)
         if (withdrawResult.isFailure) {
             return false
         }
