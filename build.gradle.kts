@@ -77,8 +77,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import Kotlin async library.
     implementation("io.lettuce:lettuce-core:7.2.0.RELEASE") // Import Lettuce API for keydb.
     compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1") // Import Duels API (API-compatible with Duels-OG).
-    compileOnlyApi(project(":libs:Utilities-OG")) // Import TrueOG Network Utilities-OG Java API (from source).
-    compileOnlyApi(project(":libs:DiamondBank-OG")) {
+    compileOnlyApi("net.trueog.utilities-og:Utilities-OG") // Import TrueOG Network Utilities-OG Java API (from source).
+    compileOnlyApi("net.trueog.diamondbankog:DiamondBank-OG") {
         attributes { attribute(kotlinAttribute, true) }
     } // Import TrueOG network DiamondBank-OG Kotlin API (from source).
 }
