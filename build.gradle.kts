@@ -37,7 +37,7 @@ val commitHash =
         output.trim()
     }
 
-group = "net.trueog.quests-og" // Declare bundle identifier.
+group = "net.trueog.questsOG" // Declare bundle identifier.
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -91,9 +91,10 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 
 /* ----------------------------- Shadow -------------------------------- */
 tasks.shadowJar {
-    exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     archiveClassifier.set("") // Use empty string instead of null.
     minimize()
+    isEnableRelocation = true
+    relocationPrefix = "${project.group}.shadow"
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
