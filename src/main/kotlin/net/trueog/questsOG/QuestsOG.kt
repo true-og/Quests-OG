@@ -63,7 +63,7 @@ class QuestsOG : JavaPlugin() {
         }
         luckPerms = luckPermsProvider.provider
 
-        val duels = Bukkit.getServer().pluginManager.getPlugin("Duels")
+        val duels = Bukkit.getServer().pluginManager.getPlugin("Duels-OG")
         if (duels == null) {
             this.logger.severe("Duels API is null, quitting....")
             Bukkit.getPluginManager().disablePlugin(this)
