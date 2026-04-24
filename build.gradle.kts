@@ -17,12 +17,11 @@ extra["kotlinAttribute"] = Attribute.of("kotlin-tag", Boolean::class.javaObjectT
 
 val kotlinAttribute: Attribute<Boolean> by rootProject.extra
 
-/* --------------------------- JDK / Kotlin ---------------------------- */
+/* ---------------------------- Java / Kotlin -------------------------- */
 java {
-    sourceCompatibility = JavaVersion.VERSION_17 // Compile with JDK 17 compatibility.
-    toolchain { // Select Java toolchain.
-        languageVersion.set(JavaLanguageVersion.of(17)) // Use JDK 17.
-        vendor.set(JvmVendorSpec.GRAAL_VM) // Use GraalVM CE.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.GRAAL_VM
     }
 }
 
@@ -72,11 +71,13 @@ repositories {
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
-    compileOnly("net.luckperms:api:5.5") // Import LuckPerms API.
+    compileOnly("net.luckperms:api:5.5") // Import the LuckPerms API.
     implementation("org.jetbrains.kotlin:kotlin-stdlib") // Import Kotlin standard library.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import Kotlin async library.
     implementation("io.lettuce:lettuce-core:7.2.0.RELEASE") // Import Lettuce API for keydb.
     implementation("org.slf4j:slf4j-nop:2.0.17") // Provide SLF4J NOP provider to suppress missing-provider warning.
+    implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
+    implementation("org.slf4j:slf4j-nop:2.0.17") // Provide a relocated no-op SLF4J backend to avoid provider warnings.
     compileOnly("com.github.Realizedd.Duels:duels-api:3.5.1") // Import Duels API (API-compatible with Duels-OG).
     compileOnlyApi(project(":libs:Utilities-OG")) // Import TrueOG Network Utilities-OG Java API (from source).
     compileOnlyApi(project(":libs:DiamondBank-OG")) {
@@ -96,6 +97,7 @@ tasks.shadowJar {
     minimize()
     isEnableRelocation = true
     relocationPrefix = "${project.group}.shadow"
+    mergeServiceFiles()
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
