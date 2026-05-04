@@ -94,10 +94,10 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 /* ----------------------------- Shadow -------------------------------- */
 tasks.shadowJar {
     archiveClassifier.set("") // Use empty string instead of null.
-    minimize()
     isEnableRelocation = true
     relocationPrefix = "${project.group}.shadow"
     mergeServiceFiles()
+    minimize { exclude(dependency("org.slf4j:slf4j-nop:.*")) }
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
