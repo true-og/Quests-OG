@@ -95,7 +95,7 @@ class HomesFour : Quest {
             return null
         }
 
-        return requirements.totalShards >= 1000 * 9 &&
+        return requirements.totalShards >= 1000L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
             requirements.totalCm / 100.0 >= 200000 &&
             requirements.hasFuriousCocktail &&
@@ -106,8 +106,14 @@ class HomesFour : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards = 1000L * 9
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 1000 * 9, "Homes four quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home four quest claimed by ${player.name} (${player.uniqueId})",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -135,7 +141,7 @@ class HomesFour : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 1000L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, 1000L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (17280000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (20000000).toLong()),
             BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),

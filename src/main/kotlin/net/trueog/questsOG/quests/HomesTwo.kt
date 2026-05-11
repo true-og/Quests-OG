@@ -65,7 +65,7 @@ class HomesTwo : Quest {
             return null
         }
 
-        return requirements.totalShards >= 100 * 9 &&
+        return requirements.totalShards >= 100L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
             requirements.totalCm / 100.0 >= 10000 &&
             requirements.levels >= 50 &&
@@ -73,8 +73,14 @@ class HomesTwo : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards = 100L * 9
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 100 * 9, "Homes two quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home two quest claimed by ${player.name} (${player.uniqueId})",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -98,7 +104,7 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 100L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, 100L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (1728000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (1000000).toLong()),
         )

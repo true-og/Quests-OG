@@ -75,7 +75,7 @@ class HomesThree : Quest {
             return null
         }
 
-        return requirements.totalShards >= 250 * 9 &&
+        return requirements.totalShards >= 250L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
             requirements.totalCm / 100.0 >= 50000 && // 100k?
             requirements.hasBeaconator &&
@@ -84,8 +84,14 @@ class HomesThree : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards = 250L * 9
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 250 * 9, "Homes three quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home three quest claimed by ${player.name} (${player.uniqueId})",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -113,7 +119,7 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 250L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, 250L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (8640000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (5000000).toLong()),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),

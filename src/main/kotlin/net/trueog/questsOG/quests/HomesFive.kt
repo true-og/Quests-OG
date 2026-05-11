@@ -118,7 +118,7 @@ class HomesFive : Quest {
             return null
         }
 
-        return requirements.totalShards >= 2500 * 9 &&
+        return requirements.totalShards >= 2500L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
             requirements.pigOneCm / 100000.0 >= 5 &&
             requirements.striderOneCm / 100000.0 >= 1 &&
@@ -137,8 +137,14 @@ class HomesFive : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards = 2500L * 9
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 2500 * 9, "Homes five quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home five quest claimed by ${player.name} (${player.uniqueId})",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -166,7 +172,7 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 2500L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, 2500L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (25920000).toLong()),
             ProgressRequirement("Cm Travelled on Pig", (requirements.pigOneCm).toLong(), (500000).toLong()),
             ProgressRequirement("Cm Travelled on Strider", (requirements.striderOneCm).toLong(), (100000).toLong()),
