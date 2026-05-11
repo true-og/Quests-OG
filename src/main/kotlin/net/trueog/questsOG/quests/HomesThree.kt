@@ -13,7 +13,6 @@ import org.bukkit.entity.Player
 class HomesThree : Quest {
     private data class Requirements(
         val totalShards: Long,
-        val requiredShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasBeaconator: Boolean,
@@ -27,7 +26,6 @@ class HomesThree : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards = 250L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -67,15 +65,7 @@ class HomesThree : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(
-            totalShards,
-            requiredShards,
-            ticksPlayed,
-            totalCm,
-            advancementProgress.isDone,
-            player.level,
-            duelsWins,
-        )
+        return Requirements(totalShards, ticksPlayed, totalCm, advancementProgress.isDone, player.level, duelsWins)
     }
 
     override suspend fun isEligible(player: Player): Boolean? {
@@ -85,7 +75,7 @@ class HomesThree : Quest {
             return null
         }
 
-        return requirements.totalShards >= requirements.requiredShards &&
+        return requirements.totalShards >= 250L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
             requirements.totalCm / 100.0 >= 50000 && // 100k?
             requirements.hasBeaconator &&
@@ -129,7 +119,7 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
+            ProgressRequirement("Total Shards", requirements.totalShards, 250L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (8640000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (5000000).toLong()),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),

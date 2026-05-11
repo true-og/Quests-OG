@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack
 class HomesSix : Quest {
     private data class Requirements(
         val totalShards: Long,
-        val requiredShards: Long,
         val ticksPlayed: Int,
         val walkOnWaterOneCm: Int,
         val walkUnderWaterOneCm: Int,
@@ -46,7 +45,6 @@ class HomesSix : Quest {
         )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards = 5000L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -82,7 +80,6 @@ class HomesSix : Quest {
 
         return Requirements(
             totalShards,
-            requiredShards,
             ticksPlayed,
             walkOnWaterOneCm,
             walkUnderWaterOneCm,
@@ -104,7 +101,7 @@ class HomesSix : Quest {
             return null
         }
 
-        return requirements.totalShards >= requirements.requiredShards &&
+        return requirements.totalShards >= 5000L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
             requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
             requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
@@ -166,7 +163,7 @@ class HomesSix : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
+            ProgressRequirement("Total Shards", requirements.totalShards, 5000L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (51840000).toLong()),
             ProgressRequirement("Cm Walked on Water", (requirements.walkOnWaterOneCm).toLong(), (1000000).toLong()),
             ProgressRequirement(

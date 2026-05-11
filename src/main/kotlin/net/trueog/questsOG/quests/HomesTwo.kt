@@ -11,7 +11,6 @@ import org.bukkit.entity.Player
 class HomesTwo : Quest {
     private data class Requirements(
         val totalShards: Long,
-        val requiredShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val levels: Int,
@@ -19,7 +18,6 @@ class HomesTwo : Quest {
     )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards = 100L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -57,7 +55,7 @@ class HomesTwo : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(totalShards, requiredShards, ticksPlayed, totalCm, player.level, duelsWins)
+        return Requirements(totalShards, ticksPlayed, totalCm, player.level, duelsWins)
     }
 
     override suspend fun isEligible(player: Player): Boolean? {
@@ -67,7 +65,7 @@ class HomesTwo : Quest {
             return null
         }
 
-        return requirements.totalShards >= requirements.requiredShards &&
+        return requirements.totalShards >= 100L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
             requirements.totalCm / 100.0 >= 10000 &&
             requirements.levels >= 50 &&
@@ -106,7 +104,7 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
+            ProgressRequirement("Total Shards", requirements.totalShards, 100L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (1728000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (1000000).toLong()),
         )

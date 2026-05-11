@@ -13,7 +13,6 @@ import org.bukkit.entity.Player
 class HomesFour : Quest {
     private data class Requirements(
         val totalShards: Long,
-        val requiredShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasFuriousCocktail: Boolean,
@@ -33,7 +32,6 @@ class HomesFour : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards = 1000L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -80,7 +78,6 @@ class HomesFour : Quest {
 
         return Requirements(
             totalShards,
-            requiredShards,
             ticksPlayed,
             totalCm,
             furiousCocktailAdvancementProgress.isDone,
@@ -98,7 +95,7 @@ class HomesFour : Quest {
             return null
         }
 
-        return requirements.totalShards >= requirements.requiredShards &&
+        return requirements.totalShards >= 1000L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 10 &&
             requirements.totalCm / 100.0 >= 200000 &&
             requirements.hasFuriousCocktail &&
@@ -144,7 +141,7 @@ class HomesFour : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
+            ProgressRequirement("Total Shards", requirements.totalShards, 1000L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (17280000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (20000000).toLong()),
             BooleanRequirement("A Furious Cocktail", requirements.hasFuriousCocktail),

@@ -16,7 +16,6 @@ import org.bukkit.persistence.PersistentDataType
 class HomesFive : Quest {
     private data class Requirements(
         val totalShards: Long,
-        val requiredShards: Long,
         val ticksPlayed: Int,
         val pigOneCm: Int,
         val striderOneCm: Int,
@@ -54,7 +53,6 @@ class HomesFive : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards = 2500L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -95,7 +93,6 @@ class HomesFive : Quest {
 
         return Requirements(
             totalShards,
-            requiredShards,
             ticksPlayed,
             pigOneCm,
             striderOneCm,
@@ -121,7 +118,7 @@ class HomesFive : Quest {
             return null
         }
 
-        return requirements.totalShards >= requirements.requiredShards &&
+        return requirements.totalShards >= 2500L * 9 &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
             requirements.pigOneCm / 100000.0 >= 5 &&
             requirements.striderOneCm / 100000.0 >= 1 &&
@@ -175,7 +172,7 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
+            ProgressRequirement("Total Shards", requirements.totalShards, 2500L * 9),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (25920000).toLong()),
             ProgressRequirement("Cm Travelled on Pig", (requirements.pigOneCm).toLong(), (500000).toLong()),
             ProgressRequirement("Cm Travelled on Strider", (requirements.striderOneCm).toLong(), (100000).toLong()),
