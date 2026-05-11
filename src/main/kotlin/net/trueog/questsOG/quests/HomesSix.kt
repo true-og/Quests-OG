@@ -133,7 +133,7 @@ class HomesSix : Quest {
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,
                 requiredShards,
-                "Home six quest claimed",
+                "Home six quest claimed by ${player.name} (${player.uniqueId})",
                 "Quests-OG /claimquest",
             )
         if (withdrawResult.isFailure) {

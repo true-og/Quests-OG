@@ -155,7 +155,7 @@ class HomesFive : Quest {
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,
                 requiredShards,
-                "Home five quest claimed",
+                "Home five quest claimed by ${player.name} (${player.uniqueId})",
                 "Quests-OG /claimquest",
             )
         if (withdrawResult.isFailure) {
