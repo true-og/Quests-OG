@@ -21,20 +21,13 @@ class HomesThree : Quest {
         val duelsWins: Int,
     )
 
-    private companion object {
-        const val REQUIRED_DIAMONDS = 250L
-    }
-
     private val beaconatorAdvancement =
         Bukkit.getServer().advancementIterator().asSequence().single {
             it.key.toString() == "minecraft:nether/create_full_beacon"
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return null
-            }
+        val requiredShards = 250L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -101,10 +94,7 @@ class HomesThree : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return false
-            }
+        val requiredShards = 250L * 9
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,

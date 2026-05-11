@@ -18,15 +18,8 @@ class HomesTwo : Quest {
         val duelsWins: Int,
     )
 
-    private companion object {
-        const val REQUIRED_DIAMONDS = 100L
-    }
-
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return null
-            }
+        val requiredShards = 100L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -82,10 +75,7 @@ class HomesTwo : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return false
-            }
+        val requiredShards = 100L * 9
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,

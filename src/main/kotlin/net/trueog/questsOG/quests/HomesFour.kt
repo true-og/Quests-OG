@@ -23,10 +23,6 @@ class HomesFour : Quest {
         val duelsWins: Int,
     )
 
-    private companion object {
-        const val REQUIRED_DIAMONDS = 1000L
-    }
-
     private val furiousCocktailAdvancement =
         Bukkit.getServer().advancementIterator().asSequence().single {
             it.key.toString() == "minecraft:nether/all_potions"
@@ -37,10 +33,7 @@ class HomesFour : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return null
-            }
+        val requiredShards = 1000L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -116,10 +109,7 @@ class HomesFour : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return false
-            }
+        val requiredShards = 1000L * 9
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,

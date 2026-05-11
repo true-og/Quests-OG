@@ -28,10 +28,6 @@ class HomesSix : Quest {
         val duelsWins: Int,
     )
 
-    private companion object {
-        const val REQUIRED_DIAMONDS = 5000L
-    }
-
     private val neededDiscs =
         setOf(
             Material.MUSIC_DISC_13,
@@ -50,10 +46,7 @@ class HomesSix : Quest {
         )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return null
-            }
+        val requiredShards = 5000L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -125,10 +118,7 @@ class HomesSix : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return false
-            }
+        val requiredShards = 5000L * 9
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,

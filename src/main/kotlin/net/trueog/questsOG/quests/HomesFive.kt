@@ -34,10 +34,6 @@ class HomesFive : Quest {
         val duelsWins: Int,
     )
 
-    private companion object {
-        const val REQUIRED_DIAMONDS = 2500L
-    }
-
     val customMobHeadKey = NamespacedKey(QuestsOG.mobHeads, "customMobHead")
 
     private val cutestPredatorAdvancement =
@@ -58,10 +54,7 @@ class HomesFive : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return null
-            }
+        val requiredShards = 2500L * 9
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -147,10 +140,7 @@ class HomesFive : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards =
-            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
-                return false
-            }
+        val requiredShards = 2500L * 9
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,
