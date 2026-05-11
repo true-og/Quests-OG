@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack
 class HomesSix : Quest {
     private data class Requirements(
         val totalShards: Long,
+        val requiredShards: Long,
         val ticksPlayed: Int,
         val walkOnWaterOneCm: Int,
         val walkUnderWaterOneCm: Int,
@@ -26,6 +27,10 @@ class HomesSix : Quest {
         val levels: Int,
         val duelsWins: Int,
     )
+
+    private companion object {
+        const val REQUIRED_DIAMONDS = 5000L
+    }
 
     private val neededDiscs =
         setOf(
@@ -45,6 +50,10 @@ class HomesSix : Quest {
         )
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return null
+            }
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -80,6 +89,7 @@ class HomesSix : Quest {
 
         return Requirements(
             totalShards,
+            requiredShards,
             ticksPlayed,
             walkOnWaterOneCm,
             walkUnderWaterOneCm,
@@ -101,7 +111,7 @@ class HomesSix : Quest {
             return null
         }
 
-        return requirements.totalShards >= 5000 * 9 &&
+        return requirements.totalShards >= requirements.requiredShards &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 30 &&
             requirements.walkOnWaterOneCm / 100000.0 >= 10 &&
             requirements.walkUnderWaterOneCm / 100000.0 >= 10 &&
@@ -115,8 +125,17 @@ class HomesSix : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return false
+            }
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 5000 * 9, "Homes six quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home six quest claimed",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -157,7 +176,7 @@ class HomesSix : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 5000L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (51840000).toLong()),
             ProgressRequirement("Cm Walked on Water", (requirements.walkOnWaterOneCm).toLong(), (1000000).toLong()),
             ProgressRequirement(

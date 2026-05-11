@@ -11,13 +11,22 @@ import org.bukkit.entity.Player
 class HomesTwo : Quest {
     private data class Requirements(
         val totalShards: Long,
+        val requiredShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val levels: Int,
         val duelsWins: Int,
     )
 
+    private companion object {
+        const val REQUIRED_DIAMONDS = 100L
+    }
+
     private suspend fun fetchRequirements(player: Player): Requirements? {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return null
+            }
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -55,7 +64,7 @@ class HomesTwo : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(totalShards, ticksPlayed, totalCm, player.level, duelsWins)
+        return Requirements(totalShards, requiredShards, ticksPlayed, totalCm, player.level, duelsWins)
     }
 
     override suspend fun isEligible(player: Player): Boolean? {
@@ -65,7 +74,7 @@ class HomesTwo : Quest {
             return null
         }
 
-        return requirements.totalShards >= 100 * 9 &&
+        return requirements.totalShards >= requirements.requiredShards &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 >= 24 &&
             requirements.totalCm / 100.0 >= 10000 &&
             requirements.levels >= 50 &&
@@ -73,8 +82,17 @@ class HomesTwo : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return false
+            }
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 100 * 9, "Homes two quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home two quest claimed",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -98,7 +116,7 @@ class HomesTwo : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 100L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (1728000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (1000000).toLong()),
         )

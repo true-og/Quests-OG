@@ -16,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType
 class HomesFive : Quest {
     private data class Requirements(
         val totalShards: Long,
+        val requiredShards: Long,
         val ticksPlayed: Int,
         val pigOneCm: Int,
         val striderOneCm: Int,
@@ -32,6 +33,10 @@ class HomesFive : Quest {
         val hasVillagerHead: Boolean,
         val duelsWins: Int,
     )
+
+    private companion object {
+        const val REQUIRED_DIAMONDS = 2500L
+    }
 
     val customMobHeadKey = NamespacedKey(QuestsOG.mobHeads, "customMobHead")
 
@@ -53,6 +58,10 @@ class HomesFive : Quest {
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return null
+            }
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -93,6 +102,7 @@ class HomesFive : Quest {
 
         return Requirements(
             totalShards,
+            requiredShards,
             ticksPlayed,
             pigOneCm,
             striderOneCm,
@@ -118,7 +128,7 @@ class HomesFive : Quest {
             return null
         }
 
-        return requirements.totalShards >= 2500 * 9 &&
+        return requirements.totalShards >= requirements.requiredShards &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 15 &&
             requirements.pigOneCm / 100000.0 >= 5 &&
             requirements.striderOneCm / 100000.0 >= 1 &&
@@ -137,8 +147,17 @@ class HomesFive : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return false
+            }
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 2500 * 9, "Homes five quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home five quest claimed",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -166,7 +185,7 @@ class HomesFive : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", requirements.totalShards, 2500L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (25920000).toLong()),
             ProgressRequirement("Cm Travelled on Pig", (requirements.pigOneCm).toLong(), (500000).toLong()),
             ProgressRequirement("Cm Travelled on Strider", (requirements.striderOneCm).toLong(), (100000).toLong()),

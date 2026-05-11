@@ -13,6 +13,7 @@ import org.bukkit.entity.Player
 class HomesThree : Quest {
     private data class Requirements(
         val totalShards: Long,
+        val requiredShards: Long,
         val ticksPlayed: Int,
         val totalCm: Int,
         val hasBeaconator: Boolean,
@@ -20,12 +21,20 @@ class HomesThree : Quest {
         val duelsWins: Int,
     )
 
+    private companion object {
+        const val REQUIRED_DIAMONDS = 250L
+    }
+
     private val beaconatorAdvancement =
         Bukkit.getServer().advancementIterator().asSequence().single {
             it.key.toString() == "minecraft:nether/create_full_beacon"
         }
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return null
+            }
         val totalShards =
             QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
@@ -65,7 +74,15 @@ class HomesThree : Quest {
 
         val duelsWins = QuestsOG.duels.userManager.get(player.uniqueId)?.wins ?: 0
 
-        return Requirements(totalShards, ticksPlayed, totalCm, advancementProgress.isDone, player.level, duelsWins)
+        return Requirements(
+            totalShards,
+            requiredShards,
+            ticksPlayed,
+            totalCm,
+            advancementProgress.isDone,
+            player.level,
+            duelsWins,
+        )
     }
 
     override suspend fun isEligible(player: Player): Boolean? {
@@ -75,7 +92,7 @@ class HomesThree : Quest {
             return null
         }
 
-        return requirements.totalShards >= 250 * 9 &&
+        return requirements.totalShards >= requirements.requiredShards &&
             requirements.ticksPlayed / 20.0 / 60.0 / 60.0 / 24.0 >= 5 &&
             requirements.totalCm / 100.0 >= 50000 && // 100k?
             requirements.hasBeaconator &&
@@ -84,8 +101,17 @@ class HomesThree : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
+        val requiredShards =
+            QuestsOG.diamondBankAPI.diamondsToShards(REQUIRED_DIAMONDS.toDouble()).getOrElse {
+                return false
+            }
         val withdrawResult =
-            QuestsOG.diamondBankAPI.consumeFromPlayer(player.uniqueId, 250 * 9, "Homes three quest claimed", null)
+            QuestsOG.diamondBankAPI.consumeFromPlayer(
+                player.uniqueId,
+                requiredShards,
+                "Home three quest claimed",
+                "Quests-OG /claimquest",
+            )
         if (withdrawResult.isFailure) {
             return false
         }
@@ -113,7 +139,7 @@ class HomesThree : Quest {
         }
 
         return arrayOf(
-            ProgressRequirement("Total Shards", (requirements.totalShards).toLong(), 250L * 9L),
+            ProgressRequirement("Total Shards", requirements.totalShards, requirements.requiredShards),
             ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (8640000).toLong()),
             ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (5000000).toLong()),
             BooleanRequirement("Beaconator", requirements.hasBeaconator),
