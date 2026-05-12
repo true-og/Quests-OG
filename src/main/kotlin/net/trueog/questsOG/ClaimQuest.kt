@@ -33,17 +33,18 @@ class ClaimQuest : CommandExecutor {
 
             if (isEligible) {
                 val successful = nextQuest.consumeQuestItems(sender)
-                if (successful) {
-                    nextQuest.reward(sender)
-                    val homeCount = HomesProgression.getHomeCount(nextQuest)
-                    val questName = nextQuest::class.simpleName
-                    UtilitiesOG.logToConsole("[Quests-OG]", "${sender.name} claimed quest $questName")
-                    UtilitiesOG.trueogMessage(
-                        sender,
-                        "<green>Claimed quest! You now have <yellow>$homeCount<green> homes.<reset>",
-                    )
-                    return@launch
+                if (!successful) {
+                    UtilitiesOG.trueogMessage(sender, "<red>Something wrong while trying to consume the quest items.")
                 }
+                nextQuest.reward(sender)
+                val homeCount = HomesProgression.getHomeCount(nextQuest)
+                val questName = nextQuest::class.simpleName
+                UtilitiesOG.logToConsole("[Quests-OG]", "${sender.name} claimed quest $questName")
+                UtilitiesOG.trueogMessage(
+                    sender,
+                    "<green>Claimed quest! You now have <yellow>$homeCount<green> homes.<reset>",
+                )
+                return@launch
             } else {
                 UtilitiesOG.trueogMessage(sender, "<red>You must meet all the quest's requirements first.<reset>")
             }
