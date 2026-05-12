@@ -35,6 +35,7 @@ class ClaimQuest : CommandExecutor {
                 val successful = nextQuest.consumeQuestItems(sender)
                 if (!successful) {
                     UtilitiesOG.trueogMessage(sender, "<red>Something wrong while trying to consume the quest items.")
+                    return@launch
                 }
                 nextQuest.reward(sender)
                 val homeCount = HomesProgression.getHomeCount(nextQuest)
