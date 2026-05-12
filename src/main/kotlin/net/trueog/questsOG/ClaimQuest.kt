@@ -44,12 +44,8 @@ class ClaimQuest : CommandExecutor {
                     )
                     return@launch
                 }
-                UtilitiesOG.trueogMessage(
-                    sender,
-                    "<red>You don't have enough <light_aqua>Diamonds</light_aqua> <red>to claim that quest.<reset>",
-                )
             } else {
-                UtilitiesOG.trueogMessage(sender, "<red>You must claim all the lower quests first.<reset>")
+                UtilitiesOG.trueogMessage(sender, "<red>You must meet all the quest's requirements first.<reset>")
             }
         }
         return true
