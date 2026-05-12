@@ -123,9 +123,7 @@ class HomesSix : Quest {
                 "Home six quest claimed by ${player.name} (${player.uniqueId})",
                 "Quests-OG /claimquest",
             )
-        if (withdrawResult.isFailure) {
-            return false
-        }
+        if (withdrawResult.isFailure) return false
 
         return runOnMainThread {
             player.level -= 250

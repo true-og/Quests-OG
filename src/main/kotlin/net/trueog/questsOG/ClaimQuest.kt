@@ -2,6 +2,7 @@ package net.trueog.questsOG
 
 import kotlinx.coroutines.launch
 import net.trueog.questsOG.progression.HomesProgression
+import net.trueog.utilitiesog.UtilitiesOG
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -10,50 +11,45 @@ import org.bukkit.entity.Player
 class ClaimQuest : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("You can only execute this command as a player.")
+            sender.sendMessage("ERROR: You can only execute this command as a player.")
             return true
         }
 
         val nextQuest = HomesProgression.getNextQuest(sender)
         if (nextQuest == null) {
-            sender.sendMessage("You cannot progress any further")
+            UtilitiesOG.trueogMessage(sender, "<green>You have completed all available quests.<reset>")
             return true
         }
 
         QuestsOG.scope.launch {
             val isEligible = nextQuest.isEligible(sender)
             if (isEligible == null) {
-                sender.sendMessage("Something wrong while trying to check if you are eligible")
+                UtilitiesOG.trueogMessage(
+                    sender,
+                    "<red>Something went wrong while checking your quest eligibility. Contact an administrator.<reset>",
+                )
                 return@launch
             }
 
             if (isEligible) {
                 val successful = nextQuest.consumeQuestItems(sender)
-                if (!successful) {
-                    sender.sendMessage("Something wrong while trying to consume the quest items")
+                if (successful) {
+                    nextQuest.reward(sender)
+                    val homeCount = HomesProgression.getHomeCount(nextQuest)
+                    val questName = nextQuest::class.simpleName
+                    UtilitiesOG.logToConsole("[Quests-OG]", "${sender.name} claimed quest $questName")
+                    UtilitiesOG.trueogMessage(
+                        sender,
+                        "<green>Claimed quest! You now have <yellow>$homeCount<green> homes.<reset>",
+                    )
                     return@launch
                 }
-                nextQuest.reward(sender)
-                sender.sendMessage("Claimed quest!")
+                UtilitiesOG.trueogMessage(
+                    sender,
+                    "<red>You don't have enough <light_aqua>Diamonds</light_aqua> <red>to claim that quest.<reset>",
+                )
             } else {
-                sender.sendMessage("You are not eligible to claim the quest")
-                val requirements = nextQuest.getRequirements(sender)
-                if (requirements == null) {
-                    sender.sendMessage("Something wrong while trying to get the unmet requirements")
-                    return@launch
-                }
-                var requirementsMessage = ""
-                for (requirement in requirements) {
-                    if (requirement is BooleanRequirement) {
-                        requirementsMessage +=
-                            "${if (requirement.met) "<green>" else "<red>"}${requirement.name}: ${requirement.met}<reset> |"
-                    }
-                    if (requirement is ProgressRequirement) {
-                        requirementsMessage +=
-                            "${if (requirement.current >= requirement.target) "<green>" else "<red>"}${requirement.name}: ${requirement.current}/${requirement.target}<reset> | "
-                    }
-                }
-                sender.sendMessage(QuestsOG.mm.deserialize(requirementsMessage))
+                UtilitiesOG.trueogMessage(sender, "<red>You must claim all the lower quests first.<reset>")
             }
         }
         return true
