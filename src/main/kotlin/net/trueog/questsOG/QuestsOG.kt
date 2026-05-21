@@ -34,7 +34,7 @@ class QuestsOG : JavaPlugin() {
         plugin = this
         val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
             logger.severe("Uncaught coroutine exception: ${throwable.message}")
-            throwable.printStackTrace()
+            if (Companion.config.debug) throwable.printStackTrace()
         }
         scope = CoroutineScope(Dispatchers.Default + SupervisorJob() + exceptionHandler)
 
