@@ -88,7 +88,7 @@ class HomesTwo : Quest {
             return false
         }
 
-        runOnMainThread { player.level -= 100 }
+        runOnMainThread { player.level -= 50 }
 
         return true
     }
@@ -108,8 +108,10 @@ class HomesTwo : Quest {
 
         return arrayOf(
             ProgressRequirement("Total Shards", requirements.totalShards, 100L * 9),
-            ProgressRequirement("Ticks Played", (requirements.ticksPlayed).toLong(), (1728000).toLong()),
-            ProgressRequirement("Total Cm Travelled", (requirements.totalCm).toLong(), (1000000).toLong()),
+            ProgressRequirement("Hours Played", (requirements.ticksPlayed / 72000).toLong(), 24L),
+            ProgressRequirement("Blocks Travelled", (requirements.totalCm / 100).toLong(), 10_000L),
+            ProgressRequirement("Levels", (requirements.levels).toLong(), 50L),
+            ProgressRequirement("Duels Wins", (requirements.duelsWins).toLong(), 10L),
         )
     }
 }
