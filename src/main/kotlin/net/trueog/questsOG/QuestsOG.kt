@@ -6,19 +6,19 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.luckperms.api.LuckPerms
-import net.trueog.diamondbankog.api.DiamondBankAPIKotlin
+import net.trueog.diamondbankog.api.DiamondBankAPIJava
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
 class QuestsOG : JavaPlugin() {
     companion object {
-        val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        lateinit var scope: CoroutineScope
 
         lateinit var plugin: QuestsOG
         lateinit var config: Config
         lateinit var redis: Redis
-        lateinit var diamondBankAPI: DiamondBankAPIKotlin
+        lateinit var diamondBankAPI: DiamondBankAPIJava
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
         lateinit var mobHeads: Plugin
@@ -32,6 +32,11 @@ class QuestsOG : JavaPlugin() {
 
     override fun onEnable() {
         plugin = this
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            logger.severe("Uncaught coroutine exception: ${throwable.message}")
+            throwable.printStackTrace()
+        }
+        scope = CoroutineScope(Dispatchers.Default + SupervisorJob() + exceptionHandler)
 
         Companion.config =
             Config.create()
@@ -47,7 +52,7 @@ class QuestsOG : JavaPlugin() {
             return
         }
 
-        val diamondBankAPIProvider = server.servicesManager.getRegistration(DiamondBankAPIKotlin::class.java)
+        val diamondBankAPIProvider = server.servicesManager.getRegistration(DiamondBankAPIJava::class.java)
         if (diamondBankAPIProvider == null) {
             logger.severe("DiamondBank-OG API is null")
             Bukkit.getPluginManager().disablePlugin(this)
@@ -81,6 +86,7 @@ class QuestsOG : JavaPlugin() {
 
         this.server.pluginManager.registerEvents(Events(), this)
         getCommand("claimquest")?.setExecutor(ClaimQuest())
+        getCommand("questgui")?.setExecutor(QuestGuiCommand())
     }
 
     override fun onDisable() {

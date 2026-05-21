@@ -83,6 +83,7 @@ dependencies {
     compileOnlyApi(project(":libs:DiamondBank-OG")) {
         attributes { attribute(kotlinAttribute, true) }
     } // Import TrueOG network DiamondBank-OG Kotlin API (from source).
+    implementation(project(":libs:GxUI-OG")) // Shade TrueOG Network GxUI-OG advancement menu API into this plugin.
 }
 
 /* ---------------------- Reproducible jars ---------------------------- */
