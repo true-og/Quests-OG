@@ -1,7 +1,6 @@
 package net.trueog.questsOG.quests
 
 import net.luckperms.api.node.types.PermissionNode
-import net.trueog.diamondbankog.DiamondBankException
 import net.trueog.questsOG.BooleanRequirement
 import net.trueog.questsOG.MainThreadBlock.runOnMainThread
 import net.trueog.questsOG.ProgressRequirement
@@ -55,9 +54,7 @@ class HomesFive : Quest {
 
     private suspend fun fetchRequirements(player: Player): Requirements? {
         val totalShards =
-            try {
-                QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId)
-            } catch (e: DiamondBankException) {
+            QuestsOG.diamondBankAPI.getTotalShards(player.uniqueId).getOrElse {
                 return null
             }
 
@@ -141,16 +138,14 @@ class HomesFive : Quest {
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
         val requiredShards = 2500L * 9
-        try {
+        val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,
                 requiredShards,
                 "Home five quest claimed by ${player.name} (${player.uniqueId})",
                 "Quests-OG /claimquest",
             )
-        } catch (e: DiamondBankException) {
-            return false
-        }
+        if (withdrawResult.isFailure) return false
 
         runOnMainThread { player.level -= 200 }
 

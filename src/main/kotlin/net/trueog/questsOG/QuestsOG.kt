@@ -6,7 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.luckperms.api.LuckPerms
-import net.trueog.diamondbankog.api.DiamondBankAPIJava
+import net.trueog.diamondbankog.api.DiamondBankAPIKotlin
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -18,7 +18,7 @@ class QuestsOG : JavaPlugin() {
         lateinit var plugin: QuestsOG
         lateinit var config: Config
         lateinit var redis: Redis
-        lateinit var diamondBankAPI: DiamondBankAPIJava
+        lateinit var diamondBankAPI: DiamondBankAPIKotlin
         lateinit var luckPerms: LuckPerms
         lateinit var duels: Duels
         lateinit var mobHeads: Plugin
@@ -52,7 +52,7 @@ class QuestsOG : JavaPlugin() {
             return
         }
 
-        val diamondBankAPIProvider = server.servicesManager.getRegistration(DiamondBankAPIJava::class.java)
+        val diamondBankAPIProvider = server.servicesManager.getRegistration(DiamondBankAPIKotlin::class.java)
         if (diamondBankAPIProvider == null) {
             logger.severe("DiamondBank-OG API is null")
             Bukkit.getPluginManager().disablePlugin(this)
