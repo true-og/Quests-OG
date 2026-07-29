@@ -106,7 +106,7 @@ class HomesFour : Quest {
     }
 
     override suspend fun consumeQuestItems(player: Player): Boolean {
-        val requiredShards = 1000L * 9
+        val requiredShards = (1000L * 9).toULong()
         val withdrawResult =
             QuestsOG.diamondBankAPI.consumeFromPlayer(
                 player.uniqueId,
