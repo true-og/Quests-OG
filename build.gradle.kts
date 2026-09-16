@@ -1,6 +1,7 @@
 /* This is free and unencumbered software released into the public domain */
 
 import com.github.jengelman.gradle.plugins.shadow.internal.RelocationUtil
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.BufferedReader
 import org.gradle.kotlin.dsl.provideDelegate
 
@@ -56,6 +57,7 @@ repositories {
     mavenCentral() // Import the Maven Central Maven Repository.
     gradlePluginPortal() // Import the Gradle Plugin Portal Maven Repository.
     maven { url = uri("https://repo.purpurmc.org/snapshots") } // Import the PurpurMC Maven Repository.
+    maven { url = uri("https://jitpack.io") } // Import JitPack (NpcApi).
     maven { url = uri("file://${System.getProperty("user.home")}/.m2/repository") }
     System.getProperty("SELF_MAVEN_LOCAL_REPO")?.let { // TrueOG Bootstrap mavenLocal().
         val dir = file(it)
@@ -70,6 +72,11 @@ repositories {
 }
 
 /* ---------------------- Java project deps ---------------------------- */
+// NpcApi is compiled against but kept off runtimeClasspath so stage 1 never relocates it; see pluginJar.
+val npcApi: Configuration by configurations.creating { isTransitive = false }
+
+configurations.compileOnly { extendsFrom(npcApi) }
+
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
     compileOnly("net.luckperms:api:5.5") // Import the LuckPerms API.
@@ -87,6 +94,7 @@ dependencies {
         attributes { attribute(kotlinAttribute, true) }
     } // Import TrueOG network DiamondBank-OG Kotlin API (from source).
     implementation(project(":libs:GxUI-OG")) // Shade TrueOG Network GxUI-OG progress menu API into this plugin.
+    npcApi("com.github.Eisi05:NpcApi:2.3.3") // Shade NpcApi (last Java 17 release; supports 1.19.4 via v1_19_R3).
 }
 
 configurations.runtimeClasspath {
@@ -101,8 +109,10 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 }
 
 /* ----------------------------- Shadow -------------------------------- */
+// Stage 1: shade and relocate every ordinary dependency (lettuce and its netty 4.2 included).
 tasks.shadowJar {
-    archiveClassifier.set("") // Use empty string instead of null.
+    archiveClassifier.set("core")
+    destinationDirectory.set(layout.buildDirectory.dir("tmp/shadowCore")) // Intermediate; not a deployable jar.
     isEnableRelocation = false
     relocationPrefix = "${project.group}.shadow"
     relocate("kotlin", "net.trueog.diamondbankog.shadow.kotlin")
@@ -112,9 +122,22 @@ tasks.shadowJar {
     minimize { exclude(dependency("org.slf4j:slf4j-nop:.*")) }
 }
 
-tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
+// Stage 2: layer NpcApi onto the relocated core. NpcApi hooks the server's own netty pipeline, so its
+// io.netty references must stay untouched; only its package is relocated, and only after stage 1 ran.
+val pluginJar by
+    tasks.registering(ShadowJar::class) {
+        archiveClassifier.set("") // The final plugin jar; use empty string instead of null.
+        from(zipTree(tasks.shadowJar.flatMap { it.archiveFile }))
+        from(provider { zipTree(npcApi.singleFile) }) {
+            exclude("de/eisi05/npc/api/utils/Metrics*.class") // Drop bStats; a no-op stub ships in src/main/kotlin.
+            exclude("META-INF/**")
+        }
+        relocate("de.eisi05", "${project.group}.shadow.de.eisi05") // Relocate NpcApi (and our call sites).
+    }
 
-tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
+tasks.jar { enabled = false } // Only the shaded plugin jar is deployable; skip the thin jar.
+
+tasks.build { dependsOn(tasks.spotlessApply, pluginJar) } // Build depends on spotless and the final plugin jar.
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {
